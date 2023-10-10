@@ -1,27 +1,50 @@
 package org.example.types;
 
+import org.example.Constants;
 import org.example.Util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class Page {
     public List<Tuple> tupleList;
+    public Integer pageNumber;
+
 
     public Page(List<Tuple> tupleList) {
         this.tupleList = tupleList;
     }
 
+    public Page(List<Tuple> tupleList, int pageNumber) {
+        this.tupleList = tupleList;
+        this.pageNumber = pageNumber;
+    }
+
     public static Page fromBytes(byte[] pageBytes, List<Attribute.TYPES> attributeTypeList) {
         int tupleSize = attributeTypeList.stream().mapToInt(attributeType -> attributeType.size).sum();
-        byte[][] tuples = Util.splitByteArray(pageBytes, tupleSize);
+        List<byte[]> tupleBytesList = Util.splitByteArray(pageBytes, tupleSize);
 
         List<Tuple> tupleList = new ArrayList<>();
-        for(byte[] tuple: tuples) {
-            tupleList.add(Tuple.fromBytes(tuple, attributeTypeList));
+        for(byte[] tupleBytes: tupleBytesList) {
+            tupleList.add(Tuple.fromBytes(tupleBytes, attributeTypeList));
         }
 
         return new Page(tupleList);
+    }
+
+    @Override
+    public String toString() {
+        String tupleString = this.tupleList.stream().map(Tuple::toString).collect(Collectors.joining());
+
+        if(this.pageNumber != null) {
+            String pageHeader = String.format(Constants.PAGE_HEADER, this.pageNumber);
+            String pageFooter = String.format(Constants.PAGE_FOOTER, this.pageNumber);
+            return pageHeader + tupleString + pageFooter;
+        }
+        else {
+            return tupleString;
+        }
     }
 }

@@ -1,6 +1,6 @@
 package org.example.types;
 
-public class Attribute {
+public interface Attribute {
     public static enum TYPES {
         INTEGER(4),
         STRING(1024);
@@ -10,4 +10,6 @@ public class Attribute {
             this.size = size;
         }
     }
+
+    String toString();
 }

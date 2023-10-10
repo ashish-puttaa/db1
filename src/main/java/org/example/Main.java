@@ -1,20 +1,15 @@
 package org.example;
 
+import org.example.types.Attribute;
 import org.example.types.Page;
+import org.example.types.Relation;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.Arrays;
-import java.util.Random;
+import java.util.Collections;
 
 public class Main {
-
-    private static final int PAGE_SIZE = 4096;
     private static final Path RELATION_FILE_PATH = Path.of("relation-file-1");
 
 
@@ -22,7 +17,7 @@ public class Main {
         Page[] pages = new Page[num];
 
         for(int i=0; i<num; i++) {
-            pages[i] = Util.generateSamplePage(String.valueOf(num), PAGE_SIZE);
+            pages[i] = Util.generateSamplePage(i, Constants.PAGE_SIZE);
         }
 
         return pages;
@@ -39,5 +34,12 @@ public class Main {
                 StandardOpenOption.APPEND
             );
         }
+
+        Relation relation = new Relation(RELATION_FILE_PATH, Constants.PAGE_SIZE, Collections.singletonList(Attribute.TYPES.STRING));
+
+        for(Page page: relation.readAllPages()) {
+            System.out.println(page);
+        }
+
     }
 }

@@ -3,7 +3,7 @@ package org.example.types.attributes;
 import org.example.types.Attribute;
 import java.nio.ByteBuffer;
 
-public class IntegerAttribute extends Attribute {
+public class IntegerAttribute implements Attribute {
     public int value;
     public static final Attribute.TYPES type = Attribute.TYPES.INTEGER;
 
@@ -14,5 +14,10 @@ public class IntegerAttribute extends Attribute {
     public static IntegerAttribute fromBytes(byte[] bytes) {
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         return new IntegerAttribute(buffer.getInt());
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(this.value);
     }
 }

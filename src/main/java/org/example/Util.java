@@ -27,15 +27,24 @@ public class Util {
         return prefix + stringBuilder + suffix;
     }
 
-    public static Page generateSamplePage(String id, int pageSize) {
-        String content = Util.generateUTF8String(
-                pageSize, String.format("start%s__", id) , String.format("__end%s\n", id)
-        );
+    public static String generateUTF8String(int length) {
+        StringBuilder stringBuilder = new StringBuilder();
+        Random random = new Random();
 
+        while (stringBuilder.toString().getBytes().length < length) {
+            char randomChar = (char) (random.nextInt(26) + 'a');  // Generates a random lowercase letter
+            stringBuilder.append(randomChar);
+        }
+
+        return stringBuilder.toString();
+    }
+
+    public static Page generateSamplePage(int id, int pageSize) {
+        String content = Util.generateUTF8String(pageSize - Constants.PAGE_HEADER.length() - Constants.PAGE_FOOTER.length());
         StringAttribute stringAttribute = new StringAttribute(content);
         Tuple tuple = new Tuple(Collections.singletonList(stringAttribute));
 
-        return new Page(Collections.singletonList(tuple));
+        return new Page(Collections.singletonList(tuple), id);
     }
 
     public static Page readPageFromFile(Path path, int offset, int pageSize, List<Attribute.TYPES> attributeTypesList) throws IOException {
@@ -49,37 +58,38 @@ public class Util {
         }
     }
 
-    public static Relation readRelationFromFile(Path path, int pageSize, List<Attribute.TYPES> attributeTypesList) throws IOException {
+    public static List<byte[]> readFileAsChunks(Path path, int chunkSize) throws IOException {
         try (RandomAccessFile randomAccessFile = new RandomAccessFile(path.toFile(), "r")) {
-            byte[] buffer = new byte[pageSize];
+            byte[] buffer = new byte[chunkSize];
             int bytesRead;
 
-            List<byte[]> pageList = new ArrayList<>();
+            List<byte[]> chunksList = new ArrayList<>();
 
             while ((bytesRead = randomAccessFile.read(buffer)) != -1) {
-                byte[] result = new byte[pageSize];
+                byte[] result = new byte[chunkSize];
                 System.arraycopy(buffer, 0, result, 0, bytesRead);
-                pageList.add(result);
+                chunksList.add(result);
             }
 
-            return Relation.fromBytes(path, pageList, attributeTypesList);
+            return chunksList;
         }
     }
 
-    public static byte[][] splitByteArray(byte[] bytes, int chunkSize) {
+    public static List<byte[]> splitByteArray(byte[] bytes, int chunkSize) {
         int length = bytes.length;
         int numOfChunks = (int) Math.ceil((double) length / chunkSize);
 
-        byte[][] parts = new byte[numOfChunks][chunkSize];
+        List<byte[]> chunksList = new ArrayList<>(numOfChunks);
 
         for (int i = 0; i < numOfChunks; i++) {
             int fromIndex = i * chunkSize;
             int toIndex = Math.min((i + 1) * chunkSize, length);
 
-            parts[i] = Arrays.copyOfRange(bytes, fromIndex, toIndex);
+            byte[] chunk = Arrays.copyOfRange(bytes, fromIndex, toIndex);
+            chunksList.add(chunk);
         }
 
-        return parts;
+        return chunksList;
     }
 
     // private static byte[][] splitByteArray(byte[] bytes, int[] chunkSizes) {

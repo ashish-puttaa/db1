@@ -3,6 +3,7 @@ package org.example.types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Tuple {
     public final List<Attribute> attributeList;
@@ -27,5 +28,10 @@ public class Tuple {
         }
 
         return new Tuple(attributeList);
+    }
+
+    @Override
+    public String toString() {
+        return attributeList.stream().map(Attribute::toString).collect(Collectors.joining());
     }
 }
