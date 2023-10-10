@@ -1,6 +1,5 @@
 package org.example.types.attributes;
 
-import org.example.types.Attribute;
 import java.nio.ByteBuffer;
 
 public class IntegerAttribute implements Attribute {

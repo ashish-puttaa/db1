@@ -1,14 +1,12 @@
 package org.example;
 
-import org.example.types.Attribute;
+import org.example.types.attributes.Attribute;
 import org.example.types.Page;
-import org.example.types.Relation;
 import org.example.types.Tuple;
 import org.example.types.attributes.StringAttribute;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.*;
 

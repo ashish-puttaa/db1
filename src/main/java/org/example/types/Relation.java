@@ -1,15 +1,16 @@
 package org.example.types;
 
-import org.example.Util;
+import org.example.types.attributes.Attribute;
+import org.example.types.iterators.PageIterator;
 
 import java.io.*;
 import java.nio.file.Path;
-import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
+
+//TODO: Add number of pages to relation
 public class Relation {
     public static final Logger LOGGER = Logger.getLogger(Relation.class.getName());
 
@@ -23,25 +24,11 @@ public class Relation {
         this.attributeTypesList = attributeTypesList;
     }
 
-    public List<Page> readAllPages() throws IOException {
-        File file = this.path.toFile();
-        byte[] bytesArray = new byte[(int) file.length()];
-
-        try(FileInputStream fileInputStream = new FileInputStream(file)) {
-            int readStatus = fileInputStream.read(bytesArray);
-        }
-        catch (FileNotFoundException fileNotFoundException) {
-            LOGGER.log(Level.SEVERE, "Relation file not found: ", fileNotFoundException);
-        }
-
-        List<byte[]> tupleBytesList = Util.splitByteArray(bytesArray, this.pageSize);
-
-        return tupleBytesList.stream()
-                .map(tupleBytes -> Page.fromBytes(tupleBytes, this.attributeTypesList))
-                .collect(Collectors.toList());
+    public Iterator<Page> getPageIterator() throws IOException {
+        return new PageIterator(this.path, this.pageSize, this.attributeTypesList);
     }
 
-    public Page readNthPageBytes(int n) throws IOException {
+    public Page readNthPage(int n) throws IOException {
         try(RandomAccessFile randomAccessFile = new RandomAccessFile(this.path.toFile(), "r")) {
             byte[] pageBytes = new byte[this.pageSize];
 

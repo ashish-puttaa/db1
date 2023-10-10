@@ -1,7 +1,5 @@
 package org.example.types.attributes;
 
-import org.example.types.Attribute;
-
 import java.nio.charset.StandardCharsets;
 
 public class StringAttribute implements Attribute {

@@ -1,13 +1,14 @@
 package org.example;
 
-import org.example.types.Attribute;
+import org.example.types.PageHeader;
+import org.example.types.attributes.Attribute;
 import org.example.types.Page;
 import org.example.types.Relation;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.Collections;
+import java.util.*;
 
 public class Main {
     private static final Path RELATION_FILE_PATH = Path.of("relation-file-1");
@@ -36,10 +37,23 @@ public class Main {
         }
 
         Relation relation = new Relation(RELATION_FILE_PATH, Constants.PAGE_SIZE, Collections.singletonList(Attribute.TYPES.STRING));
+        Iterator<Page> pageIterator = relation.getPageIterator();
 
-        for(Page page: relation.readAllPages()) {
-            System.out.println(page);
+        while(pageIterator.hasNext()) {
+            Page page = pageIterator.next();
+            System.out.println("\n" + page + "\n");
         }
+
+        List<Attribute.TYPES> types = new ArrayList<>();
+        types.add(Attribute.TYPES.STRING);
+        types.add(Attribute.TYPES.STRING);
+        types.add(Attribute.TYPES.INTEGER);
+        types.add(Attribute.TYPES.STRING);
+        types.add(Attribute.TYPES.INTEGER);
+
+        PageHeader pageHeader = PageHeader.fromAttributes(types);
+
+        pageHeader.serialize();
 
     }
 }

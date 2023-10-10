@@ -1,5 +1,7 @@
 package org.example.types;
 
+import org.example.types.attributes.Attribute;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
