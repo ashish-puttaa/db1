@@ -1,5 +1,7 @@
 package org.example.types.attributes;
 
+import org.example.Util;
+
 import java.nio.charset.StandardCharsets;
 
 public class StringAttribute implements Attribute<String> {
@@ -22,6 +24,11 @@ public class StringAttribute implements Attribute<String> {
     @Override
     public byte[] serialize() {
         return convertStringToByteArray(this.value, this.type.size);
+    }
+
+    public static StringAttribute deserialize(byte[] bytes) {
+        String value = new String(bytes, StandardCharsets.UTF_8).trim();
+        return new StringAttribute(value);
     }
 
     private static byte[] convertStringToByteArray(String input, int desiredLength) {

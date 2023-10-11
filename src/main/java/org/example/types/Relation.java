@@ -1,6 +1,5 @@
 package org.example.types;
 
-import org.example.Deserializer;
 import org.example.types.iterators.PageIterator;
 
 import java.io.*;
@@ -33,7 +32,7 @@ public class Relation {
             randomAccessFile.seek(pageOffsetInRelation);
             randomAccessFile.readFully(pageBytes);
 
-            return Deserializer.deserializePage(pageBytes);
+            return Page.deserialize(pageBytes);
         }
     }
 }

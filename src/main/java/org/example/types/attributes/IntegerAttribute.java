@@ -26,4 +26,9 @@ public class IntegerAttribute implements Attribute<Integer> {
         byteBuffer.putInt(this.value);
         return byteBuffer.array();
     }
+
+    public static IntegerAttribute deserialize(byte[] bytes) {
+        ByteBuffer buffer = ByteBuffer.wrap(bytes);
+        return new IntegerAttribute(buffer.getInt());
+    }
 }
