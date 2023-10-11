@@ -16,16 +16,14 @@ public class Relation {
 
     Path path;
     int pageSize;
-    List<Attribute.TYPES> attributeTypesList;
 
-    public Relation(Path path, int pageSize, List<Attribute.TYPES> attributeTypesList) {
+    public Relation(Path path, int pageSize) {
         this.path = path;
         this.pageSize = pageSize;
-        this.attributeTypesList = attributeTypesList;
     }
 
     public Iterator<Page> getPageIterator() throws IOException {
-        return new PageIterator(this.path, this.pageSize, this.attributeTypesList);
+        return new PageIterator(this.path, this.pageSize);
     }
 
     public Page readNthPage(int n) throws IOException {
@@ -36,7 +34,7 @@ public class Relation {
             randomAccessFile.seek(pageOffsetInRelation);
             randomAccessFile.readFully(pageBytes);
 
-            return Page.fromBytes(pageBytes, this.attributeTypesList);
+            return Page.deserialize(pageBytes);
         }
     }
 }

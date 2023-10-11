@@ -9,12 +9,10 @@ import java.util.Iterator;
 import java.util.List;
 
 public class PageIterator implements Iterator<Page> {
-    List<Attribute.TYPES> attributeTypes;
     PageBytesIterator pageBytesIterator;
 
-    public PageIterator(Path relationPath, int pageSize, List<Attribute.TYPES> attributeTypes) throws IOException {
+    public PageIterator(Path relationPath, int pageSize) throws IOException {
         this.pageBytesIterator = new PageBytesIterator(relationPath, pageSize);
-        this.attributeTypes = attributeTypes;
     }
 
     @Override
@@ -25,6 +23,6 @@ public class PageIterator implements Iterator<Page> {
     @Override
     public Page next() {
         byte[] nextPageBytes = this.pageBytesIterator.next();
-        return Page.fromBytes(nextPageBytes, this.attributeTypes);
+        return Page.deserialize(nextPageBytes);
     }
 }

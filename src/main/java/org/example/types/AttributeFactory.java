@@ -7,10 +7,10 @@ import org.example.types.attributes.StringAttribute;
 public class AttributeFactory {
     public static Attribute createFromBytes(byte[] bytes, Attribute.TYPES type) {
         if (type == Attribute.TYPES.STRING) {
-            return StringAttribute.fromBytes(bytes);
+            return StringAttribute.deserialize(bytes);
         }
         else if (type == Attribute.TYPES.INTEGER) {
-            return IntegerAttribute.fromBytes(bytes);
+            return IntegerAttribute.deserialize(bytes);
         }
         else {
             return null;

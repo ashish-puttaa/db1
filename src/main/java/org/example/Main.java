@@ -36,7 +36,7 @@ public class Main {
             );
         }
 
-        Relation relation = new Relation(RELATION_FILE_PATH, Constants.PAGE_SIZE, Collections.singletonList(Attribute.TYPES.STRING));
+        Relation relation = new Relation(RELATION_FILE_PATH, Constants.PAGE_SIZE);
         Iterator<Page> pageIterator = relation.getPageIterator();
 
         while(pageIterator.hasNext()) {
@@ -53,7 +53,8 @@ public class Main {
 
         PageHeader pageHeader = PageHeader.fromAttributes(types);
 
-        pageHeader.serialize();
+        System.out.println(pageHeader.serialize());
+        System.out.println(Arrays.toString(pageHeader.serialize()));
 
     }
 }
