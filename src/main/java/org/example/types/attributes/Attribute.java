@@ -27,5 +27,4 @@ public interface Attribute<T> {
     T getValue();
     TYPES getType();
     byte[] serialize();
-    static Attribute deserialize(byte[] bytes) { return null; }
 }

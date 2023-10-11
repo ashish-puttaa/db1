@@ -19,11 +19,6 @@ public class PageHeaderColumn {
         return new byte[] { columnNumber, attributeType.id };
     }
 
-    public static PageHeaderColumn deserialize(byte[] bytes) {
-        Attribute.TYPES attributeType = Attribute.TYPES.getTypeById(bytes[1]);
-        return new PageHeaderColumn(bytes[0], attributeType);
-    }
-
     public static List<PageHeaderColumn> fromAttributes(List<Attribute.TYPES> attributeTypes) {
         List<PageHeaderColumn> columnList = new ArrayList<>();
 

@@ -1,16 +1,15 @@
 package org.example.types;
 
+import org.example.Deserializer;
 import org.example.types.attributes.Attribute;
-import org.example.types.attributes.IntegerAttribute;
-import org.example.types.attributes.StringAttribute;
 
 public class AttributeFactory {
     public static Attribute createFromBytes(byte[] bytes, Attribute.TYPES type) {
         if (type == Attribute.TYPES.STRING) {
-            return StringAttribute.deserialize(bytes);
+            return Deserializer.deserializeStringAttribute(bytes);
         }
         else if (type == Attribute.TYPES.INTEGER) {
-            return IntegerAttribute.deserialize(bytes);
+            return Deserializer.deserializeIntegerAttribute(bytes);
         }
         else {
             return null;

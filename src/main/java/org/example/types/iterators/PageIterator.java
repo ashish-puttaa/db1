@@ -1,5 +1,6 @@
 package org.example.types.iterators;
 
+import org.example.Deserializer;
 import org.example.types.Page;
 
 import java.io.IOException;
@@ -21,6 +22,6 @@ public class PageIterator implements Iterator<Page> {
     @Override
     public Page next() {
         byte[] nextPageBytes = this.pageBytesIterator.next();
-        return Page.deserialize(nextPageBytes);
+        return Deserializer.deserializePage(nextPageBytes);
     }
 }
