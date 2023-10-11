@@ -1,6 +1,6 @@
 package org.example.types.attributes;
 
-public interface Attribute {
+public interface Attribute<T> {
     enum TYPES {
         INTEGER((byte) 1, 4),
         STRING((byte) 2, 255);
@@ -24,6 +24,7 @@ public interface Attribute {
         }
     }
 
+    T getValue();
     TYPES getType();
     byte[] serialize();
     static Attribute deserialize(byte[] bytes) { return null; }

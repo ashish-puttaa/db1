@@ -1,7 +1,5 @@
 package org.example.types;
 
-import org.example.types.attributes.Attribute;
-
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,20 +7,25 @@ import java.util.List;
 
 public class PageHeader {
     public final List<PageHeaderColumn> columnList;
+    public int tupleCount;
 
-    public PageHeader(List<PageHeaderColumn> columnList) {
+    public PageHeader(List<PageHeaderColumn> columnList, int tupleCount) {
         this.columnList = columnList;
+        this.tupleCount = tupleCount;
     }
 
     public int getTupleLength() {
-        return this.columnList.stream().mapToInt(column -> column.attributeType.size).sum();
+        return getTupleLength(this.columnList);
     }
 
     public byte[] serialize() {
         byte columnCount = (byte) this.columnList.size();
-        ByteBuffer byteBuffer = ByteBuffer.allocate(1 + columnCount * PageHeaderColumn.SIZE);
+        ByteBuffer byteBuffer = ByteBuffer.allocate(getSerializedLength(columnCount));
         byteBuffer.put(columnCount);
+
         this.columnList.stream().map(PageHeaderColumn::serialize).forEach(byteBuffer::put);
+        byteBuffer.putInt(this.tupleCount);
+
         return byteBuffer.array();
     }
 
@@ -31,27 +34,23 @@ public class PageHeader {
         List<PageHeaderColumn> columns = new ArrayList<>();
 
         for(int i=0; i<columnCount; i++) {
-            int offset = i * PageHeaderColumn.SIZE;
+            int offset = 1 + i * PageHeaderColumn.SIZE; // 1 to remove columnCount byte
             byte[] pageHeaderBytes = Arrays.copyOfRange(bytes, offset, offset + PageHeaderColumn.SIZE);
             columns.add(PageHeaderColumn.deserialize(pageHeaderBytes));
         }
 
-        return new PageHeader(columns);
-    }
+        int tupleCountOffsetStart = 1 + columnCount * PageHeaderColumn.SIZE;
+        byte[] tupleCountBytes = Arrays.copyOfRange(bytes, tupleCountOffsetStart, tupleCountOffsetStart + 4);
+        int tupleCount = ByteBuffer.wrap(tupleCountBytes).getInt();
 
-    public static PageHeader fromAttributes(List<Attribute.TYPES> attributeTypes) {
-        List<PageHeaderColumn> columnList = new ArrayList<>();
-
-        for(int i=0; i<attributeTypes.size(); i++) {
-            Attribute.TYPES type = attributeTypes.get(i);
-            byte columnNumber = (byte) (i+1);
-            columnList.add(new PageHeaderColumn(columnNumber, type));
-        }
-
-        return new PageHeader(columnList);
+        return new PageHeader(columns, tupleCount);
     }
 
     public static int getSerializedLength(int columnCount) {
-        return 1 + columnCount * PageHeaderColumn.SIZE;
+        return 1 + columnCount * PageHeaderColumn.SIZE + 4;
+    }
+
+    public static int getTupleLength(List<PageHeaderColumn> columnList) {
+        return columnList.stream().mapToInt(column -> column.attributeType.size).sum();
     }
 }

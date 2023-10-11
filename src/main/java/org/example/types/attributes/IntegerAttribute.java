@@ -2,12 +2,17 @@ package org.example.types.attributes;
 
 import java.nio.ByteBuffer;
 
-public class IntegerAttribute implements Attribute {
+public class IntegerAttribute implements Attribute<Integer> {
     public Integer value;
     public final Attribute.TYPES type = Attribute.TYPES.INTEGER;
 
     public IntegerAttribute(int value) {
         this.value = value;
+    }
+
+    @Override
+    public Integer getValue() {
+        return this.value;
     }
 
     @Override

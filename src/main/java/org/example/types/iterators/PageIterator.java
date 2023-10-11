@@ -1,12 +1,10 @@
 package org.example.types.iterators;
 
-import org.example.types.attributes.Attribute;
 import org.example.types.Page;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Iterator;
-import java.util.List;
 
 public class PageIterator implements Iterator<Page> {
     PageBytesIterator pageBytesIterator;

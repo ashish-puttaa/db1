@@ -1,8 +1,11 @@
 package org.example;
 
+import org.example.types.PageHeader;
+import org.example.types.PageHeaderColumn;
 import org.example.types.attributes.Attribute;
 import org.example.types.Page;
 import org.example.types.Tuple;
+import org.example.types.attributes.IntegerAttribute;
 import org.example.types.attributes.StringAttribute;
 
 import java.io.IOException;
@@ -11,6 +14,10 @@ import java.nio.file.Path;
 import java.util.*;
 
 public class Util {
+    public static String generateUTF8String(int length) {
+        return generateUTF8String(length, "", "");
+    }
+
     public static String generateUTF8String(int length, String prefix, String suffix) {
         StringBuilder stringBuilder = new StringBuilder();
         Random random = new Random();
@@ -25,37 +32,46 @@ public class Util {
         return prefix + stringBuilder + suffix;
     }
 
-    public static String generateUTF8String(int length) {
-        StringBuilder stringBuilder = new StringBuilder();
+    public static Page generateSamplePage(int id) {
+
+        Attribute.TYPES[] types = { Attribute.TYPES.STRING, Attribute.TYPES.INTEGER, Attribute.TYPES.STRING };
+
+        List<PageHeaderColumn> headerColumns = PageHeaderColumn.fromAttributes(Arrays.asList(types));
+        List<Tuple> tupleList = new ArrayList<>();
+
         Random random = new Random();
+        int numTuples = Constants.PAGE_SIZE / PageHeader.getTupleLength(headerColumns);
 
-        while (stringBuilder.toString().getBytes().length < length) {
-            char randomChar = (char) (random.nextInt(26) + 'a');  // Generates a random lowercase letter
-            stringBuilder.append(randomChar);
+        for(int i=0; i<numTuples; i++) {
+            List<Attribute> attributeList = new ArrayList<>();
+
+            for(Attribute.TYPES type: types) {
+                switch (type) {
+                    case STRING -> {
+                        double lowerBound = 0.25;
+                        double upperBound = 0.75;
+                        double randomPercentage = lowerBound + (upperBound - lowerBound) * random.nextDouble();
+
+                        int length = (int) (Attribute.TYPES.STRING.size * randomPercentage);
+                        String prefix = String.format("string:%d-%d__", id, i+1);
+                        String content = Util.generateUTF8String(length - prefix.length());
+                        attributeList.add(new StringAttribute(prefix + content));
+                    }
+                    case INTEGER -> {
+                        int content = random.nextInt();
+                        attributeList.add(new IntegerAttribute(content));
+                    }
+                }
+            }
+
+            tupleList.add(new Tuple(attributeList));
         }
 
-        return stringBuilder.toString();
+        PageHeader pageHeader = new PageHeader(headerColumns, numTuples);
+        return new Page(pageHeader, tupleList);
     }
 
-    public static Page generateSamplePage(int id, int pageSize) {
-        String content = Util.generateUTF8String(pageSize - Constants.PAGE_HEADER.length() - Constants.PAGE_FOOTER.length());
-        StringAttribute stringAttribute = new StringAttribute(content);
-        Tuple tuple = new Tuple(Collections.singletonList(stringAttribute));
-
-        return new Page(Collections.singletonList(tuple), id);
-    }
-
-    public static Page readPageFromFile(Path path, int offset, int pageSize, List<Attribute.TYPES> attributeTypesList) throws IOException {
-        try(RandomAccessFile randomAccessFile = new RandomAccessFile(path.toFile(), "r")) {
-            byte[] pageBytes = new byte[pageSize];
-
-            randomAccessFile.seek(offset);
-            randomAccessFile.readFully(pageBytes);
-
-            return Page.fromBytes(pageBytes, attributeTypesList);
-        }
-    }
-
+    @Deprecated
     public static List<byte[]> readFileAsChunks(Path path, int chunkSize) throws IOException {
         try (RandomAccessFile randomAccessFile = new RandomAccessFile(path.toFile(), "r")) {
             byte[] buffer = new byte[chunkSize];
@@ -90,21 +106,22 @@ public class Util {
         return chunksList;
     }
 
-    // private static byte[][] splitByteArray(byte[] bytes, int[] chunkSizes) {
-    //     int length = bytes.length;
-    //     int numOfChunks = chunkSizes.length;
-    //
-    //     byte[][] parts = new byte[numOfChunks][];
-    //
-    //     int currentIndex = 0;
-    //     for (int i = 0; i < numOfChunks; i++) {
-    //         int currentChunkSize = chunkSizes[i];
-    //         int toIndex = Math.min(currentIndex + currentChunkSize, length);
-    //
-    //         parts[i] = Arrays.copyOfRange(bytes, currentIndex, toIndex);
-    //         currentIndex = toIndex;
-    //     }
-    //
-    //     return parts;
-    // }
+    @Deprecated
+    private static byte[][] splitByteArray(byte[] bytes, int[] chunkSizes) {
+        int length = bytes.length;
+        int numOfChunks = chunkSizes.length;
+
+        byte[][] parts = new byte[numOfChunks][];
+
+        int currentIndex = 0;
+        for (int i = 0; i < numOfChunks; i++) {
+            int currentChunkSize = chunkSizes[i];
+            int toIndex = Math.min(currentIndex + currentChunkSize, length);
+
+            parts[i] = Arrays.copyOfRange(bytes, currentIndex, toIndex);
+            currentIndex = toIndex;
+        }
+
+        return parts;
+    }
 }

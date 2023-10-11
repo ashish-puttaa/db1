@@ -2,7 +2,6 @@ package org.example.types;
 
 import org.example.Constants;
 import org.example.Util;
-import org.example.types.attributes.Attribute;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -30,7 +29,8 @@ public class Page {
         List<byte[]> tupleBytesList = Util.splitByteArray(tuplesBytes, pageHeader.getTupleLength());
 
         List<Tuple> tupleList = new ArrayList<>();
-        for(byte[] tupleBytes: tupleBytesList) {
+        for(int i=0; i<pageHeader.tupleCount; i++) {
+            byte[] tupleBytes = tupleBytesList.get(i);
             tupleList.add(Tuple.deserialize(tupleBytes, pageHeader));
         }
 

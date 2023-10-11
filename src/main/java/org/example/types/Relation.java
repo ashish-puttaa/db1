@@ -1,12 +1,10 @@
 package org.example.types;
 
-import org.example.types.attributes.Attribute;
 import org.example.types.iterators.PageIterator;
 
 import java.io.*;
 import java.nio.file.Path;
 import java.util.Iterator;
-import java.util.List;
 import java.util.logging.Logger;
 
 
