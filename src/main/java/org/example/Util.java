@@ -67,7 +67,7 @@ public class Util {
             tupleList.add(new Tuple(attributeList));
         }
 
-        PageHeader pageHeader = new PageHeader(headerColumns, numTuples);
+        PageHeader pageHeader = new PageHeader((byte) headerColumns.size(), id, headerColumns, numTuples);
         return new Page(pageHeader, tupleList);
     }
 

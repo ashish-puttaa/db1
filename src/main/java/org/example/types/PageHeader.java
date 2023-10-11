@@ -1,15 +1,23 @@
 package org.example.types;
 
+import org.example.util.ByteUtil;
+
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class PageHeader {
+    public byte columnCount;
+    public int pageIdentifier;
     public final List<PageHeaderColumn> columnList;
     public int tupleCount;
 
-    public PageHeader(List<PageHeaderColumn> columnList, int tupleCount) {
+    public PageHeader(byte columnCount, int pageIdentifier, List<PageHeaderColumn> columnList, int tupleCount) {
+        this.columnCount = columnCount;
+        this.pageIdentifier = pageIdentifier;
         this.columnList = columnList;
         this.tupleCount = tupleCount;
     }
@@ -19,9 +27,10 @@ public class PageHeader {
     }
 
     public byte[] serialize() {
-        byte columnCount = (byte) this.columnList.size();
-        ByteBuffer byteBuffer = ByteBuffer.allocate(getSerializedLength(columnCount));
-        byteBuffer.put(columnCount);
+        ByteBuffer byteBuffer = ByteBuffer.allocate(getSerializedLength(this.columnCount));
+
+        byteBuffer.put(this.columnCount);
+        byteBuffer.putInt(this.pageIdentifier);
 
         this.columnList.stream().map(PageHeaderColumn::serialize).forEach(byteBuffer::put);
         byteBuffer.putInt(this.tupleCount);
@@ -31,23 +40,30 @@ public class PageHeader {
 
     public static PageHeader deserialize(byte[] bytes) {
         byte columnCount = bytes[0];
+        int pageIdentifier = ByteUtil.getInteger(bytes, 1, 5);
+
         List<PageHeaderColumn> columns = new ArrayList<>();
+        int columnOffsetStart = 5;
 
         for(int i=0; i<columnCount; i++) {
-            int offset = 1 + i * PageHeaderColumn.SIZE; // 1 to remove columnCount byte
+            int offset = columnOffsetStart + (i * PageHeaderColumn.SIZE);
             byte[] pageHeaderBytes = Arrays.copyOfRange(bytes, offset, offset + PageHeaderColumn.SIZE);
             columns.add(PageHeaderColumn.deserialize(pageHeaderBytes));
         }
 
-        int tupleCountOffsetStart = 1 + columnCount * PageHeaderColumn.SIZE;
-        byte[] tupleCountBytes = Arrays.copyOfRange(bytes, tupleCountOffsetStart, tupleCountOffsetStart + 4);
-        int tupleCount = ByteBuffer.wrap(tupleCountBytes).getInt();
+        int tupleCountOffsetStart = columnOffsetStart + columnCount * PageHeaderColumn.SIZE;
+        int tupleCount = ByteUtil.getInteger(bytes, tupleCountOffsetStart, tupleCountOffsetStart + 4);
 
-        return new PageHeader(columns, tupleCount);
+        return new PageHeader(columnCount, pageIdentifier, columns, tupleCount);
     }
 
     public static int getSerializedLength(int columnCount) {
-        return 1 + columnCount * PageHeaderColumn.SIZE + 4;
+        int columnCountLength = 1;
+        int pageIdentifierLength = 4;
+        int tupleListLength = columnCount * PageHeaderColumn.SIZE;
+        int tupleCountLength = 4;
+
+        return columnCountLength + pageIdentifierLength + tupleListLength + tupleCountLength;
     }
 
     public static int getTupleLength(List<PageHeaderColumn> columnList) {

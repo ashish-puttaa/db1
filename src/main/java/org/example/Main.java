@@ -34,13 +34,11 @@ public class Main {
 
         Relation relation = new Relation(RELATION_FILE_PATH, Constants.PAGE_SIZE);
         Iterator<Page> pageIterator = relation.getPageIterator();
-        int pageNum = 0;
 
         while(pageIterator.hasNext()) {
             Page page = pageIterator.next();
-            pageNum++;
 
-            System.out.printf("\nPAGE %d:\n", pageNum);
+            System.out.printf("\nPAGE %d:\n", page.pageHeader.pageIdentifier);
 
             System.out.println("\nHEADER:");
             String headerString = page.pageHeader.columnList.stream().map(column -> column.columnNumber + "-" + column.attributeType).collect(Collectors.joining(", "));

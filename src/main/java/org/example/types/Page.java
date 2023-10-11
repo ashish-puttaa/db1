@@ -4,9 +4,10 @@ import org.example.Constants;
 import org.example.Util;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 //TODO: Add page unique identifier which will be maintained in the directory
 //TODO: Add table identifier/schemas
@@ -24,22 +25,20 @@ public class Page {
         this.tupleList = tupleList;
     }
 
-    public static Page deserialize(byte[] pageBytes) {
-        int headerColumnCount = pageBytes[0];
+    public static Page deserialize(byte[] bytes) {
+        int headerColumnCount = bytes[0];
         int headerEndOffset = PageHeader.getSerializedLength(headerColumnCount);
 
-        byte[] pageHeaderBytes = Arrays.copyOfRange(pageBytes, 0, headerEndOffset);
-        byte[] tuplesBytes = Arrays.copyOfRange(pageBytes, headerEndOffset, pageBytes.length);
-
+        byte[] pageHeaderBytes = Arrays.copyOfRange(bytes, 0, headerEndOffset);
         PageHeader pageHeader = PageHeader.deserialize(pageHeaderBytes);
 
+        byte[] tuplesBytes = Arrays.copyOfRange(bytes, headerEndOffset, bytes.length);
         List<byte[]> tupleBytesList = Util.splitByteArray(tuplesBytes, pageHeader.getTupleLength());
 
-        List<Tuple> tupleList = new ArrayList<>();
-        for(int i=0; i<pageHeader.tupleCount; i++) {
-            byte[] tupleBytes = tupleBytesList.get(i);
-            tupleList.add(Tuple.deserialize(tupleBytes, pageHeader));
-        }
+        List<Tuple> tupleList = IntStream.range(0, pageHeader.tupleCount)
+                .mapToObj(tupleBytesList::get)
+                .map(tupleBytes -> Tuple.deserialize(tupleBytes, pageHeader))
+                .toList();
 
         return new Page(pageHeader, tupleList);
     }
