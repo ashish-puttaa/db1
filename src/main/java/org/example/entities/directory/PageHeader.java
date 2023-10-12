@@ -1,4 +1,4 @@
-package org.example.types;
+package org.example.entities.directory;
 
 import org.example.util.ByteUtil;
 
@@ -6,8 +6,6 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class PageHeader {
     public byte columnCount;

@@ -1,6 +1,4 @@
-package org.example.types.attributes;
-
-import org.example.Util;
+package org.example.entities.directory;
 
 import java.nio.charset.StandardCharsets;
 

@@ -1,4 +1,4 @@
-package org.example.types.iterators;
+package org.example.iterators;
 
 import java.io.*;
 import java.nio.file.Path;

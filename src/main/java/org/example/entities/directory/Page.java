@@ -1,12 +1,11 @@
-package org.example.types;
+package org.example.entities.directory;
 
 import org.example.Constants;
-import org.example.Util;
+import org.example.util.CommonUtil;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 //TODO: Add page unique identifier which will be maintained in the directory
@@ -33,7 +32,7 @@ public class Page {
         PageHeader pageHeader = PageHeader.deserialize(pageHeaderBytes);
 
         byte[] tuplesBytes = Arrays.copyOfRange(bytes, headerEndOffset, bytes.length);
-        List<byte[]> tupleBytesList = Util.splitByteArray(tuplesBytes, pageHeader.getTupleLength());
+        List<byte[]> tupleBytesList = CommonUtil.splitByteArray(tuplesBytes, pageHeader.getTupleLength());
 
         List<Tuple> tupleList = IntStream.range(0, pageHeader.tupleCount)
                 .mapToObj(tupleBytesList::get)

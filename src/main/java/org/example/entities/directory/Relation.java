@@ -1,6 +1,6 @@
-package org.example.types;
+package org.example.entities.directory;
 
-import org.example.types.iterators.PageIterator;
+import org.example.iterators.PageIterator;
 
 import java.io.*;
 import java.nio.file.Path;

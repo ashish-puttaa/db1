@@ -1,19 +1,20 @@
-package org.example;
+package org.example.util;
 
-import org.example.types.PageHeader;
-import org.example.types.PageHeaderColumn;
-import org.example.types.attributes.Attribute;
-import org.example.types.Page;
-import org.example.types.Tuple;
-import org.example.types.attributes.IntegerAttribute;
-import org.example.types.attributes.StringAttribute;
+import org.example.Constants;
+import org.example.entities.directory.PageHeader;
+import org.example.entities.directory.PageHeaderColumn;
+import org.example.entities.directory.Attribute;
+import org.example.entities.directory.Page;
+import org.example.entities.directory.Tuple;
+import org.example.entities.directory.IntegerAttribute;
+import org.example.entities.directory.StringAttribute;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Path;
 import java.util.*;
 
-public class Util {
+public class CommonUtil {
     public static String generateUTF8String(int length) {
         return generateUTF8String(length, "", "");
     }
@@ -54,7 +55,7 @@ public class Util {
 
                         int length = (int) (Attribute.TYPES.STRING.size * randomPercentage);
                         String prefix = String.format("string:%d-%d__", id, i+1);
-                        String content = Util.generateUTF8String(length - prefix.length());
+                        String content = CommonUtil.generateUTF8String(length - prefix.length());
                         attributeList.add(new StringAttribute(prefix + content));
                     }
                     case INTEGER -> {

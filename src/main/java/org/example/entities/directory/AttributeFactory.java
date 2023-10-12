@@ -1,8 +1,4 @@
-package org.example.types;
-
-import org.example.types.attributes.Attribute;
-import org.example.types.attributes.IntegerAttribute;
-import org.example.types.attributes.StringAttribute;
+package org.example.entities.directory;
 
 public class AttributeFactory {
     public static Attribute createFromBytes(byte[] bytes, Attribute.TYPES type) {

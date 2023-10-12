@@ -1,7 +1,8 @@
 package org.example;
 
-import org.example.types.Page;
-import org.example.types.Relation;
+import org.example.entities.directory.Page;
+import org.example.entities.directory.Relation;
+import org.example.util.CommonUtil;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,7 +18,7 @@ public class Main {
         List<Page> pageList = new ArrayList<>();
 
         for(int i=0; i<num; i++) {
-            Page page = Util.generateSamplePage(i+1);
+            Page page = CommonUtil.generateSamplePage(i+1);
             pageList.add(page);
         }
 

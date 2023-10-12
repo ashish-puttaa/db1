@@ -1,6 +1,4 @@
-package org.example.types;
-
-import org.example.types.attributes.Attribute;
+package org.example.entities.directory;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;

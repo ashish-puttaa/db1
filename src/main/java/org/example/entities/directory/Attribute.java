@@ -1,4 +1,4 @@
-package org.example.types.attributes;
+package org.example.entities.directory;
 
 public interface Attribute<T> {
     enum TYPES {
