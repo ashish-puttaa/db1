@@ -2,14 +2,14 @@ package org.example.entities.directory;
 
 import java.util.*;
 
-public class PageHoleMap {
+public class PageHolesMap {
     SortedMap<Short, List<Short>> holes;
 
-    public PageHoleMap(PageSlotArrayEntry[] slotArray) {
+    public PageHolesMap(PageSlotArrayEntry[] slotArray) {
         this.holes = this.constructPageHolesMap(slotArray);
     }
 
-    public Optional<Short> getPageHole(short desiredLength) {
+    public Optional<Short> getHole(short desiredLength) {
         Iterator<Map.Entry<Short, List<Short>>> iterator = this.holes.entrySet().iterator();
 
         while(iterator.hasNext()) {

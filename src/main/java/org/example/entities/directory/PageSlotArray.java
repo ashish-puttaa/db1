@@ -6,20 +6,20 @@ import java.nio.ByteBuffer;
 import java.util.*;
 
 public class PageSlotArray {
-    List<PageSlotArrayEntry> slotArray;
+    List<PageSlotArrayEntry> slots;
 
     //METADATA
-   PageHoleMap pageHolesMap;
+    private final PageHolesMap pageHolesMap;
 
     public PageSlotArray(PageSlotArrayEntry[] slotArray) {
-        this.slotArray = List.of(slotArray);
-        this.pageHolesMap = new PageHoleMap(slotArray);
+        this.slots = List.of(slotArray);
+        this.pageHolesMap = new PageHolesMap(slotArray);
     }
 
     public byte[] serialize() {
-        ByteBuffer byteBuffer = ByteBuffer.allocate(this.slotArray.size() * PageSlotArrayEntry.getSerializedLength());
+        ByteBuffer byteBuffer = ByteBuffer.allocate(this.slots.size() * PageSlotArrayEntry.getSerializedLength());
 
-        for(PageSlotArrayEntry slot: this.slotArray) {
+        for(PageSlotArrayEntry slot: this.slots) {
             byteBuffer.put(slot.serialize());
         }
 
@@ -61,9 +61,13 @@ public class PageSlotArray {
         return new PageSlotArray(entryList.toArray(PageSlotArrayEntry[]::new));
     }
 
+    public Optional<Short> getHole(short desiredLength) {
+        return this.pageHolesMap.getHole(desiredLength);
+    }
+
     public int insertSlot(short pageOffset, short tupleLength) {
-        for(int i=0; i<this.slotArray.size(); i++) {
-            PageSlotArrayEntry entry = this.slotArray.get(i);
+        for(int i = 0; i<this.slots.size(); i++) {
+            PageSlotArrayEntry entry = this.slots.get(i);
 
             if(entry.isEmpty()) {
                 entry.setValue(pageOffset, tupleLength);
@@ -72,12 +76,12 @@ public class PageSlotArray {
         }
 
         PageSlotArrayEntry entry = new PageSlotArrayEntry(pageOffset, tupleLength);
-        this.slotArray.add(entry);
-        return this.slotArray.size() - 1;
+        this.slots.add(entry);
+        return this.slots.size() - 1;
     }
 
     public void emptySlot(int index) {
-        PageSlotArrayEntry entryToRemove = this.slotArray.get(index);
+        PageSlotArrayEntry entryToRemove = this.slots.get(index);
 
         if(!entryToRemove.isEmpty()) {
             entryToRemove.setToEmpty();
