@@ -14,19 +14,22 @@ public class PageHolesMap {
 
         while(iterator.hasNext()) {
             Map.Entry<Short, List<Short>> entry = iterator.next();
-            Short length = entry.getKey();
+            Short holeLength = entry.getKey();
 
-            if (length >= desiredLength) {
+            if (holeLength >= desiredLength) {
                 List<Short> offsetList = entry.getValue();
 
                 if(!offsetList.isEmpty()) {
-                    short offset = offsetList.remove(0);
+                    short holeOffset = offsetList.remove(0);
+                    short desiredOffset = (short) (holeOffset + holeLength - desiredLength);
+                    short newHoleLength = (short) (holeLength - desiredLength);
 
                     if(offsetList.isEmpty()) {
                         iterator.remove();
                     }
 
-                    return Optional.of(offset);
+                    this.holes.computeIfAbsent(newHoleLength, k -> new ArrayList<>()).add(holeOffset);
+                    return Optional.of(desiredOffset);
                 }
             }
         }
