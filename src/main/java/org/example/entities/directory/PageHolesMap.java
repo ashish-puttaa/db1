@@ -2,6 +2,11 @@ package org.example.entities.directory;
 
 import java.util.*;
 
+//TODO:
+// - Add the unassigned tuple bytes as a big hole in the hole map
+// - Put HoleMap and SlotArray inside PageTuple (contains the tuple byte[])
+// - Handle case when the hole is at the end. While constructing the hole map add a page slot entry for the end of the page (offset = page end, length = 0).
+
 public class PageHolesMap {
     SortedMap<Short, List<Short>> holes;
 
