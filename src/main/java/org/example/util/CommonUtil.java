@@ -1,13 +1,7 @@
 package org.example.util;
 
 import org.example.Constants;
-import org.example.entities.directory.PageHeader;
-import org.example.entities.directory.PageHeaderColumn;
-import org.example.entities.directory.Attribute;
-import org.example.entities.directory.Page;
-import org.example.entities.directory.Tuple;
-import org.example.entities.directory.IntegerAttribute;
-import org.example.entities.directory.StringAttribute;
+import org.example.entities.directory.*;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -37,11 +31,11 @@ public class CommonUtil {
 
         Attribute.TYPES[] types = { Attribute.TYPES.STRING, Attribute.TYPES.INTEGER, Attribute.TYPES.STRING };
 
-        List<PageHeaderColumn> headerColumns = PageHeaderColumn.fromAttributes(Arrays.asList(types));
+        PageColumnMetadataArray columnMetadataArray = PageColumnMetadataArray.fromAttributes(Arrays.asList(types));
         List<Tuple> tupleList = new ArrayList<>();
 
         Random random = new Random();
-        int numTuples = Constants.PAGE_SIZE / PageHeader.getTupleLength(headerColumns);
+        short numTuples = (short) (Constants.PAGE_SIZE / columnMetadataArray.getTupleLength());
 
         for(int i=0; i<numTuples; i++) {
             List<Attribute> attributeList = new ArrayList<>();
@@ -68,8 +62,8 @@ public class CommonUtil {
             tupleList.add(new Tuple(attributeList));
         }
 
-        PageHeader pageHeader = new PageHeader((byte) headerColumns.size(), id, headerColumns, numTuples);
-        return new Page(pageHeader, tupleList);
+        PageHeader pageHeader = new PageHeader((byte) columnMetadataArray.metadataArray.length, id, numTuples);
+        return new Page(pageHeader, columnMetadataArray, tupleList);
     }
 
     @Deprecated

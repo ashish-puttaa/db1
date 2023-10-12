@@ -22,12 +22,12 @@ public class Tuple {
         return byteBuffer.array();
     }
 
-    public static Tuple deserialize(byte[] bytes, PageHeader pageHeader) {
-        List<Attribute> attributeList = new ArrayList<>(pageHeader.columnList.size());
+    public static Tuple deserialize(byte[] bytes, PageColumnMetadataArray columnMetadataArray) {
+        List<Attribute> attributeList = new ArrayList<>(columnMetadataArray.metadataArray.length);
 
         int currentIndex = 0;
 
-        for (PageHeaderColumn column : pageHeader.columnList) {
+        for (PageColumnMetadata column : columnMetadataArray.metadataArray) {
             Attribute.TYPES attributeType = column.attributeType;
             int toIndex = Math.min(currentIndex + attributeType.size, bytes.length);
             byte[] chunk = Arrays.copyOfRange(bytes, currentIndex, toIndex);

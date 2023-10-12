@@ -8,4 +8,10 @@ public class ByteUtil {
         byte[] intBytes = Arrays.copyOfRange(bytes, fromOffset, toOffset);
         return ByteBuffer.wrap(intBytes).getInt();
     }
+
+    public static byte[] readNBytes(ByteBuffer byteBuffer, int n) {
+        byte[] bytes = new byte[n];
+        byteBuffer.get(bytes);
+        return bytes;
+    }
 }

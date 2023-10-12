@@ -1,12 +1,11 @@
 package org.example.entities.directory;
 
 import org.example.Constants;
+import org.example.util.ByteUtil;
 import org.example.util.CommonUtil;
 
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.IntStream;
 
 //TODO: Add page unique identifier which will be maintained in the directory
 //TODO: Add table identifier/schemas
@@ -17,34 +16,39 @@ import java.util.stream.IntStream;
 //TODO: Add a overflow page for very large tuple values
 public class Page {
     public PageHeader header;
+    public PageColumnMetadataArray columnMetadataArray;
     public List<Tuple> tupleList;
 
-    public Page(PageHeader header, List<Tuple> tupleList) {
+    public Page(PageHeader header, PageColumnMetadataArray columnMetadataArray, List<Tuple> tupleList) {
         this.header = header;
+        this.columnMetadataArray = columnMetadataArray;
         this.tupleList = tupleList;
     }
 
     public static Page deserialize(byte[] bytes) {
-        int headerColumnCount = bytes[0];
-        int headerEndOffset = PageHeader.getSerializedLength(headerColumnCount);
+        ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
 
-        byte[] pageHeaderBytes = Arrays.copyOfRange(bytes, 0, headerEndOffset);
-        PageHeader pageHeader = PageHeader.deserialize(pageHeaderBytes);
+        byte[] headerBytes = ByteUtil.readNBytes(byteBuffer, PageHeader.getSerializedLength());
+        PageHeader header = PageHeader.deserialize(headerBytes);
 
-        byte[] tuplesBytes = Arrays.copyOfRange(bytes, headerEndOffset, bytes.length);
-        List<byte[]> tupleBytesList = CommonUtil.splitByteArray(tuplesBytes, pageHeader.getTupleLength());
+        byte[] columnMetadataArrayBytes = ByteUtil.readNBytes(byteBuffer, PageColumnMetadataArray.getSerializedLength(header.columnCount));
+        PageColumnMetadataArray columnMetadataArray = PageColumnMetadataArray.deserialize(columnMetadataArrayBytes, header.columnCount);
 
-        List<Tuple> tupleList = IntStream.range(0, pageHeader.tupleCount)
-                .mapToObj(tupleBytesList::get)
-                .map(tupleBytes -> Tuple.deserialize(tupleBytes, pageHeader))
+        byte[] tupleListBytes = ByteUtil.readNBytes(byteBuffer, columnMetadataArray.getTupleLength() * header.tupleCount);
+
+        List<byte[]> tupleBytesList = CommonUtil.splitByteArray(tupleListBytes, columnMetadataArray.getTupleLength());
+
+        List<Tuple> tupleList = tupleBytesList.stream()
+                .map(tupleBytes -> Tuple.deserialize(tupleBytes, columnMetadataArray))
                 .toList();
 
-        return new Page(pageHeader, tupleList);
+        return new Page(header, columnMetadataArray, tupleList);
     }
 
     public byte[] serialize() {
         ByteBuffer byteBuffer = ByteBuffer.allocate(Constants.PAGE_SIZE);
         byteBuffer.put(this.header.serialize());
+        byteBuffer.put(this.columnMetadataArray.serialize());
         this.tupleList.stream().map(Tuple::serialize).forEach(byteBuffer::put);
         return byteBuffer.array();
     }
