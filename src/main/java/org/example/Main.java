@@ -38,10 +38,10 @@ public class Main {
         while(pageIterator.hasNext()) {
             Page page = pageIterator.next();
 
-            System.out.printf("\nPAGE %d:\n", page.pageHeader.pageIdentifier);
+            System.out.printf("\nPAGE %d:\n", page.header.pageIdentifier);
 
             System.out.println("\nHEADER:");
-            String headerString = page.pageHeader.columnList.stream().map(column -> column.columnNumber + "-" + column.attributeType).collect(Collectors.joining(", "));
+            String headerString = page.header.columnList.stream().map(column -> column.columnNumber + "-" + column.attributeType).collect(Collectors.joining(", "));
             System.out.println(headerString);
 
             System.out.println("\nTUPLES:");

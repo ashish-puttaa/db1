@@ -17,11 +17,11 @@ import java.util.stream.IntStream;
 // Its called ctid in postgres (6 bytes)
 //TODO: Add a overflow page for very large tuple values
 public class Page {
-    public PageHeader pageHeader;
+    public PageHeader header;
     public List<Tuple> tupleList;
 
-    public Page(PageHeader pageHeader, List<Tuple> tupleList) {
-        this.pageHeader = pageHeader;
+    public Page(PageHeader header, List<Tuple> tupleList) {
+        this.header = header;
         this.tupleList = tupleList;
     }
 
@@ -45,7 +45,7 @@ public class Page {
 
     public byte[] serialize() {
         ByteBuffer byteBuffer = ByteBuffer.allocate(Constants.PAGE_SIZE);
-        byteBuffer.put(this.pageHeader.serialize());
+        byteBuffer.put(this.header.serialize());
         this.tupleList.stream().map(Tuple::serialize).forEach(byteBuffer::put);
         return byteBuffer.array();
     }
