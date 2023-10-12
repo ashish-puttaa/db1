@@ -5,12 +5,12 @@ import java.nio.ByteBuffer;
 public class PageHeader {
     public byte columnCount;
     public int pageIdentifier;
-    public short tupleCount;
+    public short slotCount;
 
-    public PageHeader(byte columnCount, int pageIdentifier, short tupleCount) {
+    public PageHeader(byte columnCount, int pageIdentifier, short slotCount) {
         this.columnCount = columnCount;
         this.pageIdentifier = pageIdentifier;
-        this.tupleCount = tupleCount;
+        this.slotCount = slotCount;
     }
 
     public byte[] serialize() {
@@ -18,7 +18,7 @@ public class PageHeader {
 
         byteBuffer.put(this.columnCount);
         byteBuffer.putInt(this.pageIdentifier);
-        byteBuffer.putShort(this.tupleCount);
+        byteBuffer.putShort(this.slotCount);
 
         return byteBuffer.array();
     }
@@ -28,16 +28,16 @@ public class PageHeader {
 
         byte columnCount = byteBuffer.get();
         int pageIdentifier = byteBuffer.getInt();
-        short tupleCount = byteBuffer.getShort();
+        short slotCount = byteBuffer.getShort();
 
-        return new PageHeader(columnCount, pageIdentifier, tupleCount);
+        return new PageHeader(columnCount, pageIdentifier, slotCount);
     }
 
     public static int getSerializedLength() {
         int columnCountLength = Byte.BYTES;
         int pageIdentifierLength = Integer.BYTES;
-        int tupleCountLength = Short.BYTES;
+        int slotCountLength = Short.BYTES;
 
-        return columnCountLength + pageIdentifierLength + tupleCountLength;
+        return columnCountLength + pageIdentifierLength + slotCountLength;
     }
 }

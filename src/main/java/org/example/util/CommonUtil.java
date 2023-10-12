@@ -63,7 +63,9 @@ public class CommonUtil {
         }
 
         PageHeader pageHeader = new PageHeader((byte) columnMetadataArray.metadataArray.length, id, numTuples);
-        return new Page(pageHeader, columnMetadataArray, tupleList);
+        PageSlotArray pageSlotArray = PageSlotArray.fromTupleList(tupleList);
+
+        return new Page(pageHeader, columnMetadataArray, pageSlotArray, tupleList);
     }
 
     @Deprecated

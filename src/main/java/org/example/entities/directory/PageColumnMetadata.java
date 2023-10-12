@@ -1,8 +1,5 @@
 package org.example.entities.directory;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class PageColumnMetadata {
     public byte columnNumber;
     public Attribute.TYPES attributeType;
@@ -25,6 +22,6 @@ public class PageColumnMetadata {
     }
 
     public static int getSerializedLength() {
-        return 1 + 1;
+        return Byte.BYTES + Byte.BYTES;
     }
 }
