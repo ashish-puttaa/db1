@@ -14,8 +14,8 @@ public class StringAttribute implements Attribute<String> {
     }
 
     @Override
-    public TYPES getType() {
-        return TYPES.STRING;
+    public AttributeType getType() {
+        return AttributeType.STRING;
     }
 
     @Override

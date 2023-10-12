@@ -43,11 +43,11 @@ public class PageColumnMetadataArray {
         return numColumns * PageColumnMetadata.getSerializedLength();
     }
 
-    public static PageColumnMetadataArray fromAttributes(List<Attribute.TYPES> attributeTypes) {
+    public static PageColumnMetadataArray fromAttributes(List<AttributeType> attributeTypes) {
         PageColumnMetadata[] columnMetadataArray = new PageColumnMetadata[attributeTypes.size()];
 
         for (int i = 0; i < attributeTypes.size(); i++) {
-            Attribute.TYPES type = attributeTypes.get(i);
+            AttributeType type = attributeTypes.get(i);
             byte columnNumber = (byte) (i + 1);
             columnMetadataArray[i] = new PageColumnMetadata(columnNumber, type);
         }

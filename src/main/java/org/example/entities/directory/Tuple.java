@@ -28,7 +28,7 @@ public class Tuple {
         int currentIndex = 0;
 
         for (PageColumnMetadata column : columnMetadataArray.metadataArray) {
-            Attribute.TYPES attributeType = column.attributeType;
+            AttributeType attributeType = column.attributeType;
             int toIndex = Math.min(currentIndex + attributeType.size, bytes.length);
             byte[] chunk = Arrays.copyOfRange(bytes, currentIndex, toIndex);
 

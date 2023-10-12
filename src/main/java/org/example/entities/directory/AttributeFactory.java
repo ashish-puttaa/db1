@@ -1,11 +1,11 @@
 package org.example.entities.directory;
 
 public class AttributeFactory {
-    public static Attribute createFromBytes(byte[] bytes, Attribute.TYPES type) {
-        if (type == Attribute.TYPES.STRING) {
+    public static Attribute createFromBytes(byte[] bytes, AttributeType type) {
+        if (type == AttributeType.STRING) {
             return StringAttribute.deserialize(bytes);
         }
-        else if (type == Attribute.TYPES.INTEGER) {
+        else if (type == AttributeType.INTEGER) {
             return IntegerAttribute.deserialize(bytes);
         }
         else {

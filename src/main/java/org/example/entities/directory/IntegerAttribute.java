@@ -15,8 +15,8 @@ public class IntegerAttribute implements Attribute<Integer> {
     }
 
     @Override
-    public TYPES getType() {
-        return TYPES.INTEGER;
+    public AttributeType getType() {
+        return AttributeType.INTEGER;
     }
 
     @Override

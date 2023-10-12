@@ -2,9 +2,9 @@ package org.example.entities.directory;
 
 public class PageColumnMetadata {
     public byte columnNumber;
-    public Attribute.TYPES attributeType;
+    public AttributeType attributeType;
 
-    public PageColumnMetadata(byte columnNumber, Attribute.TYPES attributeType) {
+    public PageColumnMetadata(byte columnNumber, AttributeType attributeType) {
         this.columnNumber = columnNumber;
         this.attributeType = attributeType;
     }
@@ -17,7 +17,7 @@ public class PageColumnMetadata {
         byte columnNumber = bytes[0];
         byte attributeTypeId = bytes[1];
 
-        Attribute.TYPES attributeType = Attribute.TYPES.getTypeById(attributeTypeId);
+        AttributeType attributeType = AttributeType.getTypeById(attributeTypeId);
         return new PageColumnMetadata(columnNumber, attributeType);
     }
 

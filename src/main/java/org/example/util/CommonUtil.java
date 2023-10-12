@@ -29,7 +29,7 @@ public class CommonUtil {
 
     public static Page generateSamplePage(int id) {
 
-        Attribute.TYPES[] types = { Attribute.TYPES.STRING, Attribute.TYPES.INTEGER, Attribute.TYPES.STRING };
+        AttributeType[] types = { AttributeType.STRING, AttributeType.INTEGER, AttributeType.STRING };
 
         PageColumnMetadataArray columnMetadataArray = PageColumnMetadataArray.fromAttributes(Arrays.asList(types));
         List<Tuple> tupleList = new ArrayList<>();
@@ -40,14 +40,14 @@ public class CommonUtil {
         for(int i=0; i<numTuples; i++) {
             List<Attribute> attributeList = new ArrayList<>();
 
-            for(Attribute.TYPES type: types) {
+            for(AttributeType type: types) {
                 switch (type) {
                     case STRING -> {
                         double lowerBound = 0.25;
                         double upperBound = 0.75;
                         double randomPercentage = lowerBound + (upperBound - lowerBound) * random.nextDouble();
 
-                        int length = (int) (Attribute.TYPES.STRING.size * randomPercentage);
+                        int length = (int) (AttributeType.STRING.size * randomPercentage);
                         String prefix = String.format("string:%d-%d__", id, i+1);
                         String content = CommonUtil.generateUTF8String(length - prefix.length());
                         attributeList.add(new StringAttribute(prefix + content));
