@@ -29,7 +29,7 @@ public class CommonUtil {
 
     public static Page generateSamplePage(int id) {
 
-        AttributeType[] types = { AttributeType.STRING, AttributeType.INTEGER, AttributeType.STRING };
+        AttributeType[] types = { AttributeType.CHAR, AttributeType.INTEGER, AttributeType.CHAR};
 
         PageColumnMetadataArray columnMetadataArray = PageColumnMetadataArray.fromAttributes(Arrays.asList(types));
         List<Tuple> tupleList = new ArrayList<>();
@@ -42,15 +42,15 @@ public class CommonUtil {
 
             for(AttributeType type: types) {
                 switch (type) {
-                    case STRING -> {
+                    case CHAR -> {
                         double lowerBound = 0.25;
                         double upperBound = 0.75;
                         double randomPercentage = lowerBound + (upperBound - lowerBound) * random.nextDouble();
 
-                        int length = (int) (AttributeType.STRING.size * randomPercentage);
+                        int length = (int) (AttributeType.CHAR.size * randomPercentage);
                         String prefix = String.format("string:%d-%d__", id, i+1);
                         String content = CommonUtil.generateUTF8String(length - prefix.length());
-                        attributeList.add(new StringAttribute(prefix + content));
+                        attributeList.add(new CharAttribute(prefix + content));
                     }
                     case INTEGER -> {
                         int content = random.nextInt();

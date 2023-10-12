@@ -4,10 +4,10 @@ import org.example.util.ByteUtil;
 
 import java.nio.charset.StandardCharsets;
 
-public class StringAttribute implements Attribute<String> {
+public class CharAttribute implements Attribute<String> {
     public String value;
 
-    public StringAttribute(String value) {
+    public CharAttribute(String value) {
         this.value = value;
     }
 
@@ -17,7 +17,7 @@ public class StringAttribute implements Attribute<String> {
 
     @Override
     public AttributeType getType() {
-        return AttributeType.STRING;
+        return AttributeType.CHAR;
     }
 
     @Override
@@ -25,8 +25,8 @@ public class StringAttribute implements Attribute<String> {
         return ByteUtil.convertStringToByteArray(this.value, this.getType().size);
     }
 
-    public static StringAttribute deserialize(byte[] bytes) {
+    public static CharAttribute deserialize(byte[] bytes) {
         String value = new String(bytes, StandardCharsets.UTF_8).trim();
-        return new StringAttribute(value);
+        return new CharAttribute(value);
     }
 }

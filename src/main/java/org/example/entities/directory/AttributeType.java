@@ -2,7 +2,7 @@ package org.example.entities.directory;
 
 public enum AttributeType {
     INTEGER((byte) 1, 4),
-    STRING((byte) 2, 255);
+    CHAR((byte) 2, 255);
 
     public final byte id;
     public final int size;
