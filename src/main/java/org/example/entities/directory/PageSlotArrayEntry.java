@@ -6,7 +6,7 @@ import org.example.util.ByteUtil;
 import java.nio.ByteBuffer;
 
 public class PageSlotArrayEntry {
-    boolean hasData;
+    private boolean hasData;
     short pageOffset;
     short tupleLength;
 
