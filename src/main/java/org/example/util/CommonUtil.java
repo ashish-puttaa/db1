@@ -38,7 +38,7 @@ public class CommonUtil {
         short numTuples = (short) (Constants.PAGE_SIZE / columnMetadataArray.getTupleLength());
 
         for(int i=0; i<numTuples; i++) {
-            List<Attribute> attributeList = new ArrayList<>();
+            List<Attribute<?>> attributeList = new ArrayList<>();
 
             for(AttributeType type: types) {
                 switch (type) {

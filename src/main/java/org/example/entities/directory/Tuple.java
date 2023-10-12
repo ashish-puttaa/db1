@@ -6,9 +6,9 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Tuple {
-    public final List<Attribute> attributeList;
+    public final List<Attribute<?>> attributeList;
 
-    public Tuple(List<Attribute> attributeList) {
+    public Tuple(List<Attribute<?>> attributeList) {
         this.attributeList = attributeList;
     }
 
@@ -23,7 +23,7 @@ public class Tuple {
     }
 
     public static Tuple deserialize(byte[] bytes, PageColumnMetadataArray columnMetadataArray) {
-        List<Attribute> attributeList = new ArrayList<>(columnMetadataArray.metadataArray.length);
+        List<Attribute<?>> attributeList = new ArrayList<>(columnMetadataArray.metadataArray.length);
 
         int currentIndex = 0;
 
@@ -32,7 +32,7 @@ public class Tuple {
             int toIndex = Math.min(currentIndex + attributeType.size, bytes.length);
             byte[] chunk = Arrays.copyOfRange(bytes, currentIndex, toIndex);
 
-            Attribute attribute = AttributeFactory.createFromBytes(chunk, attributeType);
+            Attribute<?> attribute = AttributeFactory.createFromBytes(chunk, attributeType);
             attributeList.add(attribute);
 
             currentIndex = toIndex;
