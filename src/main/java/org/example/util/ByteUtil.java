@@ -16,15 +16,17 @@ public class ByteUtil {
         return bytes;
     }
 
-    public static byte[] convertStringToByteArray(String input, int desiredLength) {
-        byte[] byteArray = input.getBytes(StandardCharsets.UTF_8);
+    public static byte[] convertToByteArray(String input) {
+        return input.getBytes(StandardCharsets.UTF_8);
+    }
 
-        if (byteArray.length >= desiredLength) {
+    public static byte[] convertToPaddedByteArray(String input, int desiredLength) {
+        byte[] byteArray = convertToByteArray(input);
+
+        if(byteArray.length >= desiredLength) {
             return byteArray;
         }
-        else {
-            byte[] paddedByteArray = Arrays.copyOf(byteArray, desiredLength);
-            return paddedByteArray;
-        }
+
+        return Arrays.copyOf(byteArray, desiredLength);
     }
 }

@@ -22,7 +22,7 @@ public class CharAttribute implements Attribute<String> {
 
     @Override
     public byte[] serialize() {
-        return ByteUtil.convertStringToByteArray(this.value, this.getType().size);
+        return ByteUtil.convertToPaddedByteArray(this.value, this.getType().size);
     }
 
     public static CharAttribute deserialize(byte[] bytes) {
