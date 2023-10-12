@@ -4,7 +4,6 @@ import java.nio.ByteBuffer;
 
 public class IntegerAttribute implements Attribute<Integer> {
     public Integer value;
-    public final Attribute.TYPES type = Attribute.TYPES.INTEGER;
 
     public IntegerAttribute(int value) {
         this.value = value;
@@ -17,12 +16,12 @@ public class IntegerAttribute implements Attribute<Integer> {
 
     @Override
     public TYPES getType() {
-        return this.type;
+        return TYPES.INTEGER;
     }
 
     @Override
     public byte[] serialize() {
-        ByteBuffer byteBuffer = ByteBuffer.allocate(this.type.size);
+        ByteBuffer byteBuffer = ByteBuffer.allocate(this.getType().size);
         byteBuffer.putInt(this.value);
         return byteBuffer.array();
     }

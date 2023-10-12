@@ -4,7 +4,6 @@ import java.nio.charset.StandardCharsets;
 
 public class StringAttribute implements Attribute<String> {
     public String value;
-    public final TYPES type = TYPES.STRING;
 
     public StringAttribute(String value) {
         this.value = value;
@@ -16,12 +15,12 @@ public class StringAttribute implements Attribute<String> {
 
     @Override
     public TYPES getType() {
-        return this.type;
+        return TYPES.STRING;
     }
 
     @Override
     public byte[] serialize() {
-        return convertStringToByteArray(this.value, this.type.size);
+        return convertStringToByteArray(this.value, this.getType().size);
     }
 
     public static StringAttribute deserialize(byte[] bytes) {
