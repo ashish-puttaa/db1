@@ -7,14 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PageSlotArray {
-    PageSlotArrayEntry[] slotArray;
+    List<PageSlotArrayEntry> slotArray;
 
     public PageSlotArray(PageSlotArrayEntry[] slotArray) {
-        this.slotArray = slotArray;
+        this.slotArray = List.of(slotArray);
     }
 
     public byte[] serialize() {
-        ByteBuffer byteBuffer = ByteBuffer.allocate(slotArray.length * PageSlotArrayEntry.getSerializedLength());
+        ByteBuffer byteBuffer = ByteBuffer.allocate(slotArray.size() * PageSlotArrayEntry.getSerializedLength());
 
         for(PageSlotArrayEntry slot: slotArray) {
             byteBuffer.put(slot.serialize());
@@ -56,5 +56,24 @@ public class PageSlotArray {
         }
 
         return new PageSlotArray(entryList.toArray(PageSlotArrayEntry[]::new));
+    }
+
+    public int insertSlot(short pageOffset, short tupleLength) {
+        for(int i=0; i<this.slotArray.size(); i++) {
+            PageSlotArrayEntry entry = this.slotArray.get(i);
+
+            if(entry.isEmpty()) {
+                entry.setValue(pageOffset, tupleLength);
+                return i;
+            }
+        }
+
+        PageSlotArrayEntry entry = new PageSlotArrayEntry(pageOffset, tupleLength);
+        this.slotArray.add(entry);
+        return this.slotArray.size() - 1;
+    }
+
+    public void emptySlot(int index) {
+        this.slotArray.get(index).setToEmpty();
     }
 }

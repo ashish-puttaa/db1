@@ -29,4 +29,12 @@ public class ByteUtil {
 
         return Arrays.copyOf(byteArray, desiredLength);
     }
+
+    public static byte convertBooleanToByte(boolean flag) {
+        return (byte) (flag ? 1 : 0);
+    }
+
+    public static boolean convertByteToBoolean(byte flag) {
+        return flag != 0;
+    }
 }
