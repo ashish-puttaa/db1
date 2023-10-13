@@ -57,7 +57,7 @@ public class PageHolesMap {
             PageSlotArrayEntry currentEntry = sortedSlotArray[i];
 
             short previousEntryOffsetEnd = (short) (previousEntry.pageOffset + previousEntry.tupleLength - 1);
-            boolean hasGap = currentEntry.pageOffset > previousEntryOffsetEnd;
+            boolean hasGap = currentEntry.pageOffset > previousEntryOffsetEnd + 1;
 
             if(hasGap) {
                 short holeStartOffset = (short) (previousEntryOffsetEnd + 1);
