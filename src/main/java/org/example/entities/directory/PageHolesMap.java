@@ -9,9 +9,12 @@ import java.util.*;
 
 public class PageHolesMap {
     private final SortedMap<Short, List<Short>> holes;
+    private Short tupleOffsetStart;
+    private Short tupleStartOffsetHoleLength = null;
 
-    public PageHolesMap(PageSlotArrayEntry[] slotArray) {
-        this.holes = this.constructPageHolesMap(slotArray);
+    public PageHolesMap(PageSlotArrayEntry[] slotArray, short tupleOffsetStart) {
+        this.holes = this.constructPageHolesMap(slotArray, tupleOffsetStart);
+        this.tupleOffsetStart = tupleOffsetStart;
     }
 
     public Optional<Short> getHole(short desiredLength) {
@@ -46,7 +49,7 @@ public class PageHolesMap {
         this.holes.computeIfAbsent(holeLength, k -> new ArrayList<>()).add(holeOffset);
     }
 
-    private SortedMap<Short, List<Short>> constructPageHolesMap(PageSlotArrayEntry[] slotArray) {
+    private SortedMap<Short, List<Short>> constructPageHolesMap(PageSlotArrayEntry[] slotArray, short tupleOffsetStart) {
         SortedMap<Short, List<Short>> holesMap = new TreeMap<>();
 
         PageSlotArrayEntry[] nonEmptySlotsArray = Arrays.stream(slotArray).filter(entry -> !entry.isEmpty()).toArray(PageSlotArrayEntry[]::new);
@@ -64,6 +67,10 @@ public class PageHolesMap {
                 short holeLength = (short) (currentEntry.pageOffset - holeStartOffset);
 
                 holesMap.computeIfAbsent(holeLength, k -> new ArrayList<>()).add(holeStartOffset);
+
+                if(holeStartOffset == tupleOffsetStart) {
+                    this.tupleStartOffsetHoleLength = holeLength;
+                }
             }
         }
 
@@ -74,5 +81,18 @@ public class PageHolesMap {
         return Arrays.stream(slotArray)
                 .sorted(Comparator.comparingInt(entry -> entry.pageOffset))
                 .toArray(PageSlotArrayEntry[]::new);
+    }
+
+    public void shiftTupleStartOffsetOnePositionRight() {
+        if(this.tupleStartOffsetHoleLength != null && this.holes.containsKey(this.tupleStartOffsetHoleLength)) {
+            List<Short> holeOffsets = this.holes.get(this.tupleStartOffsetHoleLength);
+            holeOffsets.remove(this.tupleOffsetStart);
+
+            short newOffsetZeroHoleLength = (short) (this.tupleStartOffsetHoleLength - 1);
+            this.addHole(newOffsetZeroHoleLength, this.tupleOffsetStart);
+
+            this.tupleOffsetStart++;
+            this.tupleStartOffsetHoleLength--;
+        }
     }
 }

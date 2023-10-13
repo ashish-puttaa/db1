@@ -37,7 +37,8 @@ public class Page {
         PageColumnMetadataArray columnMetadataArray = PageColumnMetadataArray.deserialize(columnMetadataArrayBytes, header.columnCount);
 
         byte[] slotArrayBytes = ByteUtil.readNBytes(byteBuffer, PageSlotArray.getSerializedLength(header.slotCount));
-        PageSlotArray slotArray = PageSlotArray.deserialize(slotArrayBytes, header.slotCount);
+        short slotArrayOffsetStart = (short) (headerBytes.length + columnMetadataArrayBytes.length + 1);
+        PageSlotArray slotArray = PageSlotArray.deserialize(slotArrayBytes, header.slotCount, slotArrayOffsetStart);
 
         byte[] tupleListBytes = ByteUtil.readNBytes(byteBuffer, columnMetadataArray.getTupleLength() * header.slotCount);
 

@@ -63,7 +63,9 @@ public class CommonUtil {
         }
 
         PageHeader pageHeader = new PageHeader((byte) columnMetadataArray.metadataArray.length, id, numTuples);
-        PageSlotArray pageSlotArray = PageSlotArray.fromTupleList(tupleList);
+
+        short pageSlotArrayOffsetStart = (short) (PageHeader.getSerializedLength() + PageColumnMetadataArray.getSerializedLength(pageHeader.columnCount) + 1);
+        PageSlotArray pageSlotArray = PageSlotArray.fromTupleList(tupleList, pageSlotArrayOffsetStart);
 
         return new Page(pageHeader, columnMetadataArray, pageSlotArray, tupleList);
     }
