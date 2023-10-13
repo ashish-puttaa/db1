@@ -89,7 +89,7 @@ public class PageSlotArray {
             short holeStartOffset = entryToRemove.pageOffset;
             short holeLength = entryToRemove.tupleLength;
 
-            this.pageHolesMap.holes.computeIfAbsent(holeLength, k -> new ArrayList<>()).add(holeStartOffset);
+            this.pageHolesMap.addHole(holeLength, holeStartOffset);
         }
     }
 }

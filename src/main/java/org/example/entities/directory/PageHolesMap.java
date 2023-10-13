@@ -8,7 +8,7 @@ import java.util.*;
 // - Handle case when the hole is at the end. While constructing the hole map add a page slot entry for the end of the page (offset = page end, length = 0).
 
 public class PageHolesMap {
-    SortedMap<Short, List<Short>> holes;
+    private final SortedMap<Short, List<Short>> holes;
 
     public PageHolesMap(PageSlotArrayEntry[] slotArray) {
         this.holes = this.constructPageHolesMap(slotArray);
@@ -40,6 +40,10 @@ public class PageHolesMap {
         }
 
         return Optional.empty();
+    }
+
+    public void addHole(short holeLength, short holeOffset) {
+        this.holes.computeIfAbsent(holeLength, k -> new ArrayList<>()).add(holeOffset);
     }
 
     private SortedMap<Short, List<Short>> constructPageHolesMap(PageSlotArrayEntry[] slotArray) {
