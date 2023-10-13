@@ -46,7 +46,7 @@ public class Main {
             System.out.println(headerString);
 
             System.out.println("\nTUPLES:");
-            page.tupleList.stream().forEach(tuple -> {
+            page.tupleList.forEach(tuple -> {
                 String tupleString = tuple.attributeList.stream().map(attribute -> attribute.getValue().toString()).collect(Collectors.joining(":"));
                 System.out.println(tupleString);
             });
