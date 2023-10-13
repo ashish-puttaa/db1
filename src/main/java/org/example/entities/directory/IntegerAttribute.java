@@ -3,7 +3,7 @@ package org.example.entities.directory;
 import java.nio.ByteBuffer;
 
 public class IntegerAttribute implements Attribute<Integer> {
-    public Integer value;
+    private Integer value;
 
     public IntegerAttribute(int value) {
         this.value = value;
@@ -12,6 +12,11 @@ public class IntegerAttribute implements Attribute<Integer> {
     @Override
     public Integer getValue() {
         return this.value;
+    }
+
+    @Override
+    public void setValue(Integer value) {
+        this.value = value;
     }
 
     @Override

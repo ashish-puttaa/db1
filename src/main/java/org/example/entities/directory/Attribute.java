@@ -2,6 +2,7 @@ package org.example.entities.directory;
 
 public interface Attribute<T> {
     T getValue();
+    void setValue(T value);
     AttributeType getType();
     byte[] serialize();
 

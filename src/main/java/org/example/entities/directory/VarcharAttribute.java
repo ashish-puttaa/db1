@@ -20,6 +20,11 @@ public class VarcharAttribute implements Attribute<String> {
     }
 
     @Override
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    @Override
     public AttributeType getType() {
         return AttributeType.VARCHAR;
     }
