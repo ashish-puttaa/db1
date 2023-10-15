@@ -10,7 +10,7 @@ import java.util.stream.IntStream;
 public class PageColumnMetadataArray {
     public PageColumnMetadata[] metadataArray;
 
-    public PageColumnMetadataArray(PageColumnMetadata[] metadataArray) {
+    private PageColumnMetadataArray(PageColumnMetadata[] metadataArray) {
         this.metadataArray = metadataArray;
     }
 

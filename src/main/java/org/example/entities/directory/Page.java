@@ -5,6 +5,7 @@ import org.example.util.ByteUtil;
 import org.example.util.CommonUtil;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.List;
 
 //TODO: Add page unique identifier which will be maintained in the directory
@@ -20,11 +21,21 @@ public class Page {
     public PageSlotArray slotArray;
     public List<Tuple> tupleList;
 
-    public Page(PageHeader header, PageColumnMetadataArray columnMetadataArray, PageSlotArray slotArray, List<Tuple> tupleList) {
+    private Page(PageHeader header, PageColumnMetadataArray columnMetadataArray, PageSlotArray slotArray, List<Tuple> tupleList) {
         this.header = header;
         this.columnMetadataArray = columnMetadataArray;
         this.slotArray = slotArray;
         this.tupleList = tupleList;
+    }
+
+    public Page(int pageIdentifier, List<AttributeType> attributeTypeList) {
+        byte numColumns = (byte) attributeTypeList.size();
+        short pageSlotArrayOffsetStart = (short) (PageHeader.getSerializedLength() + PageColumnMetadataArray.getSerializedLength(numColumns) + 1);
+
+        this.header = new PageHeader(numColumns, pageIdentifier);;
+        this.columnMetadataArray = PageColumnMetadataArray.fromAttributes(attributeTypeList);;
+        this.slotArray = new PageSlotArray(pageSlotArrayOffsetStart);
+        this.tupleList = new ArrayList<>();
     }
 
     public static Page deserialize(byte[] bytes) {
@@ -58,5 +69,9 @@ public class Page {
         byteBuffer.put(this.slotArray.serialize());
         this.tupleList.stream().map(Tuple::serialize).forEach(byteBuffer::put);
         return byteBuffer.array();
+    }
+
+    public int getTupleLength() {
+        return this.columnMetadataArray.getTupleLength();
     }
 }

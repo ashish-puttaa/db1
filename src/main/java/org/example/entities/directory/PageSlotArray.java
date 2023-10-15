@@ -14,12 +14,16 @@ public class PageSlotArray {
     private final short slotArrayOffsetStart;
     private final PageHolesMap pageHolesMap;
 
-    public PageSlotArray(PageSlotArrayEntry[] slotArray, short slotArrayOffsetStart) {
+    private PageSlotArray(PageSlotArrayEntry[] slotArray, short slotArrayOffsetStart) {
         this.slots = List.of(slotArray);
         this.slotArrayOffsetStart = slotArrayOffsetStart;
 
         PageSlotArrayEntry[] updatedSlotArray = addStartAndEndHolesToSlotsArray(slotArray, slotArrayOffsetStart);
         this.pageHolesMap = new PageHolesMap(updatedSlotArray, slotArrayOffsetStart);
+    }
+
+    public PageSlotArray(short slotArrayOffsetStart) {
+        this(new PageSlotArrayEntry[0], slotArrayOffsetStart);
     }
 
     public byte[] serialize() {

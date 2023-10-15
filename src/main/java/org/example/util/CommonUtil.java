@@ -28,19 +28,19 @@ public class CommonUtil {
     }
 
     public static Page generateSamplePage(int id) {
+        List<AttributeType> attributeTypes = Arrays.asList(AttributeType.CHAR, AttributeType.INTEGER, AttributeType.CHAR);
 
-        AttributeType[] types = { AttributeType.CHAR, AttributeType.INTEGER, AttributeType.CHAR};
+        Page page = new Page(id, attributeTypes);
 
-        PageColumnMetadataArray columnMetadataArray = PageColumnMetadataArray.fromAttributes(Arrays.asList(types));
         List<Tuple> tupleList = new ArrayList<>();
 
         Random random = new Random();
-        short numTuples = (short) (Constants.PAGE_SIZE / columnMetadataArray.getTupleLength());
+        short numTuples = (short) (Constants.PAGE_SIZE / page.getTupleLength());
 
         for(int i=0; i<numTuples; i++) {
             List<Attribute<?>> attributeList = new ArrayList<>();
 
-            for(AttributeType type: types) {
+            for(AttributeType type: attributeTypes) {
                 switch (type) {
                     case CHAR -> {
                         double lowerBound = 0.25;
@@ -62,12 +62,7 @@ public class CommonUtil {
             tupleList.add(new Tuple(attributeList));
         }
 
-        PageHeader pageHeader = new PageHeader((byte) columnMetadataArray.metadataArray.length, id, numTuples);
-
-        short pageSlotArrayOffsetStart = (short) (PageHeader.getSerializedLength() + PageColumnMetadataArray.getSerializedLength(pageHeader.columnCount) + 1);
-        PageSlotArray pageSlotArray = PageSlotArray.fromTupleList(tupleList, pageSlotArrayOffsetStart);
-
-        return new Page(pageHeader, columnMetadataArray, pageSlotArray, tupleList);
+        return page;
     }
 
     @Deprecated

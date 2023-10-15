@@ -13,6 +13,10 @@ public class PageHeader {
         this.slotCount = slotCount;
     }
 
+    public PageHeader(byte columnCount, int pageIdentifier) {
+        this(columnCount, pageIdentifier, (short) 0);
+    }
+
     public byte[] serialize() {
         ByteBuffer byteBuffer = ByteBuffer.allocate(getSerializedLength());
 
