@@ -86,19 +86,20 @@ public class PageSlotArray {
     }
 
     private static PageSlotArrayEntry[] addStartAndEndHolesToSlotsArray(PageSlotArrayEntry[] slotArray, short slotArrayOffsetStart) {
-        boolean hasTupleStartOffset = Arrays.stream(slotArray).anyMatch(entry -> entry.pageOffset == getTupleOffsetStart(slotArrayOffsetStart, slotArray.length));
+        int slotArrayLength = slotArray.length;
+        boolean hasTupleStartOffset = Arrays.stream(slotArray).anyMatch(entry -> entry.pageOffset == getTupleOffsetStart(slotArrayOffsetStart, slotArrayLength));
         boolean hasPageEndOffset = Arrays.stream(slotArray).anyMatch(entry -> entry.pageOffset + entry.tupleLength == Constants.PAGE_SIZE);
 
         if(!hasTupleStartOffset) {
             short tupleOffsetStart = getTupleOffsetStart(slotArrayOffsetStart, slotArray.length);
             PageSlotArrayEntry tupleStartSlot = new PageSlotArrayEntry(tupleOffsetStart, (short) 0);
-            return Stream.concat(Arrays.stream(slotArray), Stream.of(tupleStartSlot)).toArray(PageSlotArrayEntry[]::new);
+            slotArray = Stream.concat(Arrays.stream(slotArray), Stream.of(tupleStartSlot)).toArray(PageSlotArrayEntry[]::new);
         }
 
         if(!hasPageEndOffset) {
-            short pageEndOffset = (short) (Constants.PAGE_SIZE - getSerializedLength(slotArray.length));
+            short pageEndOffset = (short) (Constants.PAGE_SIZE - slotArrayOffsetStart);
             PageSlotArrayEntry pageEndSlot = new PageSlotArrayEntry(pageEndOffset, (short) 0);
-            return Stream.concat(Arrays.stream(slotArray), Stream.of(pageEndSlot)).toArray(PageSlotArrayEntry[]::new);
+            slotArray = Stream.concat(Arrays.stream(slotArray), Stream.of(pageEndSlot)).toArray(PageSlotArrayEntry[]::new);
         }
 
         return slotArray;
