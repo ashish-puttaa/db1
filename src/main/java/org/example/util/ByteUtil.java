@@ -1,5 +1,7 @@
 package org.example.util;
 
+import org.example.entities.directory.PageSlotArrayEntry;
+
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -36,5 +38,13 @@ public class ByteUtil {
 
     public static boolean convertByteToBoolean(byte flag) {
         return flag != 0;
+    }
+
+    public static byte[] shrinkByteArrayFromFront(byte[] bytes, int lengthToShrink) {
+        int shrunkLength = bytes.length - lengthToShrink;
+        byte[] shrunkTupleBytes = new byte[shrunkLength];
+
+        System.arraycopy(bytes, lengthToShrink, shrunkTupleBytes, 0, shrunkLength);
+        return shrunkTupleBytes;
     }
 }

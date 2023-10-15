@@ -106,32 +106,47 @@ public class PageSlotArray {
         return updatedSlotsList;
     }
 
-    private int appendToSlotArray(PageSlotArrayEntry slotEntry) {
+    private void appendToSlotArray(PageSlotArrayEntry slotEntry) {
         this.slots.add(slotEntry);
         this.pageHolesMap.shiftTupleStartOffsetOnePositionRight();
-        return this.slots.size() - 1;
     }
 
     public Optional<Short> getHole(short desiredLength) {
         return this.pageHolesMap.getHole(desiredLength);
     }
 
+    public void returnHole(short offset, short length) {
+        this.pageHolesMap.addHole(length, offset);
+    }
+
     public Iterator<PageSlotArrayEntry> getIterator() {
         return new OccupiedPageSlotsIterator(this.slots);
     }
 
-    public int insertSlot(short pageOffset, short tupleLength) {
+    public Optional<Integer> getEmptySlotIndex() {
         for(int i = 0; i<this.slots.size(); i++) {
-            PageSlotArrayEntry entry = this.slots.get(i);
-
-            if(entry.isEmpty()) {
-                entry.setValue(pageOffset, tupleLength);
-                return i;
+            if(this.slots.get(i).isEmpty()) {
+                return Optional.of(i);
             }
         }
 
-        PageSlotArrayEntry entry = new PageSlotArrayEntry(pageOffset, tupleLength);
-        return this.appendToSlotArray(entry);
+        return Optional.empty();
+    }
+
+    public int insertSlot(short pageOffset, short tupleLength) {
+        Optional<Integer> optionalEmptySlotIndex = this.getEmptySlotIndex();
+
+        if(optionalEmptySlotIndex.isPresent()) {
+            int emptySlotIndex = optionalEmptySlotIndex.get();
+            PageSlotArrayEntry entry = this.slots.get(emptySlotIndex);
+            entry.setValue(pageOffset, tupleLength);
+            return emptySlotIndex;
+        }
+        else {
+            PageSlotArrayEntry entry = new PageSlotArrayEntry(pageOffset, tupleLength);
+            this.appendToSlotArray(entry);
+            return this.slots.size() - 1;
+        }
     }
 
     public void emptySlot(int index) {
