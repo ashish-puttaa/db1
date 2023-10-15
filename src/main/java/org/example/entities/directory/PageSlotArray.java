@@ -6,25 +6,24 @@ import org.example.util.ByteUtil;
 
 import java.nio.ByteBuffer;
 import java.util.*;
-import java.util.stream.Stream;
 
 public class PageSlotArray {
-    private List<PageSlotArrayEntry> slots;
+    private final List<PageSlotArrayEntry> slots;
 
     //METADATA
     private final short slotArrayOffsetStart;
     private final PageHolesMap pageHolesMap;
 
-    private PageSlotArray(PageSlotArrayEntry[] slotArray, short slotArrayOffsetStart) {
-        this.slots = List.of(slotArray);
+    private PageSlotArray(List<PageSlotArrayEntry> slots, short slotArrayOffsetStart) {
+        this.slots = slots;
         this.slotArrayOffsetStart = slotArrayOffsetStart;
 
-        PageSlotArrayEntry[] updatedSlotArray = addStartAndEndHolesToSlotsArray(slotArray, slotArrayOffsetStart);
-        this.pageHolesMap = new PageHolesMap(updatedSlotArray, slotArrayOffsetStart);
+        List<PageSlotArrayEntry> updatedSlotsList = addStartAndEndHolesToSlotsArray(slots, slotArrayOffsetStart);
+        this.pageHolesMap = new PageHolesMap(updatedSlotsList, slotArrayOffsetStart);
     }
 
     public PageSlotArray(short slotArrayOffsetStart) {
-        this(new PageSlotArrayEntry[0], slotArrayOffsetStart);
+        this(new ArrayList<>(), slotArrayOffsetStart);
     }
 
     public byte[] serialize() {
@@ -39,11 +38,12 @@ public class PageSlotArray {
 
     public static PageSlotArray deserialize(byte[] bytes, int numSlots, short slotsArrayOffsetStart) {
         ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
-        PageSlotArrayEntry[] slotArray = new PageSlotArrayEntry[numSlots];
+        List<PageSlotArrayEntry> slotArray = new ArrayList<>(numSlots);
 
         for (int i = 0; i < numSlots; i++) {
             byte[] slotEntryBytes = ByteUtil.readNBytes(byteBuffer, PageSlotArrayEntry.getSerializedLength());
-            slotArray[i] = PageSlotArrayEntry.deserialize(slotEntryBytes);
+            PageSlotArrayEntry slot = PageSlotArrayEntry.deserialize(slotEntryBytes);
+            slotArray.add(slot);
         }
 
         return new PageSlotArray(slotArray, slotsArrayOffsetStart);
@@ -66,7 +66,7 @@ public class PageSlotArray {
     }
 
     public static PageSlotArray fromTupleList(List<Tuple> tupleList, short slotArrayOffsetStart) {
-        List<PageSlotArrayEntry> entryList = new ArrayList<>();
+        List<PageSlotArrayEntry> slotsList = new ArrayList<>();
         short currentOffset = 0;
 
         for(Tuple tuple: tupleList) {
@@ -77,32 +77,33 @@ public class PageSlotArray {
                     .sum();
 
             PageSlotArrayEntry slotArrayEntry = new PageSlotArrayEntry(pageOffset, tupleLength);
-            entryList.add(slotArrayEntry);
+            slotsList.add(slotArrayEntry);
 
             currentOffset += tupleLength;
         }
 
-        return new PageSlotArray(entryList.toArray(PageSlotArrayEntry[]::new), slotArrayOffsetStart);
+        return new PageSlotArray(slotsList, slotArrayOffsetStart);
     }
 
-    private static PageSlotArrayEntry[] addStartAndEndHolesToSlotsArray(PageSlotArrayEntry[] slotArray, short slotArrayOffsetStart) {
-        int slotArrayLength = slotArray.length;
-        boolean hasTupleStartOffset = Arrays.stream(slotArray).anyMatch(entry -> entry.pageOffset == getTupleOffsetStart(slotArrayOffsetStart, slotArrayLength));
-        boolean hasPageEndOffset = Arrays.stream(slotArray).anyMatch(entry -> entry.pageOffset + entry.tupleLength == Constants.PAGE_SIZE);
+    private static List<PageSlotArrayEntry> addStartAndEndHolesToSlotsArray(List<PageSlotArrayEntry> slotsList, short slotArrayOffsetStart) {
+        boolean hasTupleStartOffset = slotsList.stream().anyMatch(entry -> entry.pageOffset == getTupleOffsetStart(slotArrayOffsetStart, slotsList.size()));
+        boolean hasPageEndOffset = slotsList.stream().anyMatch(entry -> entry.pageOffset + entry.tupleLength == Constants.PAGE_SIZE);
+
+        List<PageSlotArrayEntry> updatedSlotsList = new ArrayList<>(slotsList);
 
         if(!hasTupleStartOffset) {
-            short tupleOffsetStart = getTupleOffsetStart(slotArrayOffsetStart, slotArray.length);
+            short tupleOffsetStart = getTupleOffsetStart(slotArrayOffsetStart, updatedSlotsList.size());
             PageSlotArrayEntry tupleStartSlot = new PageSlotArrayEntry(tupleOffsetStart, (short) 0);
-            slotArray = Stream.concat(Arrays.stream(slotArray), Stream.of(tupleStartSlot)).toArray(PageSlotArrayEntry[]::new);
+            updatedSlotsList.add(tupleStartSlot);
         }
 
         if(!hasPageEndOffset) {
             short pageEndOffset = (short) (Constants.PAGE_SIZE - slotArrayOffsetStart);
             PageSlotArrayEntry pageEndSlot = new PageSlotArrayEntry(pageEndOffset, (short) 0);
-            slotArray = Stream.concat(Arrays.stream(slotArray), Stream.of(pageEndSlot)).toArray(PageSlotArrayEntry[]::new);
+            updatedSlotsList.add(pageEndSlot);
         }
 
-        return slotArray;
+        return updatedSlotsList;
     }
 
     private int appendToSlotArray(PageSlotArrayEntry slotEntry) {

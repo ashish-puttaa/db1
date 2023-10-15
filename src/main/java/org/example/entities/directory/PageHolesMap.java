@@ -12,8 +12,8 @@ public class PageHolesMap {
     private Short tupleOffsetStart;
     private Optional<Short> optionalTupleStartOffsetHoleLength = Optional.empty();
 
-    public PageHolesMap(PageSlotArrayEntry[] slotArray, short tupleOffsetStart) {
-        this.holes = this.constructPageHolesMap(slotArray, tupleOffsetStart);
+    public PageHolesMap(List<PageSlotArrayEntry> slotsList, short tupleOffsetStart) {
+        this.holes = this.constructPageHolesMap(slotsList, tupleOffsetStart);
         this.tupleOffsetStart = tupleOffsetStart;
     }
 
@@ -53,10 +53,10 @@ public class PageHolesMap {
         this.holes.computeIfAbsent(holeLength, k -> new ArrayList<>()).add(holeOffset);
     }
 
-    private SortedMap<Short, List<Short>> constructPageHolesMap(PageSlotArrayEntry[] slotArray, short tupleOffsetStart) {
+    private SortedMap<Short, List<Short>> constructPageHolesMap(List<PageSlotArrayEntry> slotsList, short tupleOffsetStart) {
         SortedMap<Short, List<Short>> holesMap = new TreeMap<>();
 
-        PageSlotArrayEntry[] nonEmptySlotsArray = Arrays.stream(slotArray).filter(entry -> !entry.isEmpty()).toArray(PageSlotArrayEntry[]::new);
+        PageSlotArrayEntry[] nonEmptySlotsArray = slotsList.stream().filter(entry -> !entry.isEmpty()).toArray(PageSlotArrayEntry[]::new);
         PageSlotArrayEntry[] sortedSlotArray = this.sortSlotArrayByOffset(nonEmptySlotsArray);
 
         for(int i=1; i<sortedSlotArray.length; i++) {
