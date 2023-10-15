@@ -1,6 +1,7 @@
 package org.example.entities.directory;
 
 import org.example.Constants;
+import org.example.iterators.OccupiedPageSlotsIterator;
 import org.example.util.ByteUtil;
 
 import java.nio.ByteBuffer;
@@ -8,7 +9,7 @@ import java.util.*;
 import java.util.stream.Stream;
 
 public class PageSlotArray {
-    List<PageSlotArrayEntry> slots;
+    private List<PageSlotArrayEntry> slots;
 
     //METADATA
     private final short slotArrayOffsetStart;
@@ -113,6 +114,10 @@ public class PageSlotArray {
         return this.pageHolesMap.getHole(desiredLength);
     }
 
+    public Iterator<PageSlotArrayEntry> getIterator() {
+        return new OccupiedPageSlotsIterator(this.slots);
+    }
+
     public int insertSlot(short pageOffset, short tupleLength) {
         for(int i = 0; i<this.slots.size(); i++) {
             PageSlotArrayEntry entry = this.slots.get(i);
@@ -138,5 +143,13 @@ public class PageSlotArray {
 
             this.pageHolesMap.addHole(holeLength, holeStartOffset);
         }
+    }
+
+    public PageSlotArrayEntry getSlot(int slotIndex) {
+        if (slotIndex > this.slots.size() - 1) {
+            throw new IndexOutOfBoundsException();
+        }
+
+        return this.slots.get(slotIndex);
     }
 }

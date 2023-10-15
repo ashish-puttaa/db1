@@ -2,6 +2,7 @@ package org.example;
 
 import org.example.entities.directory.Page;
 import org.example.entities.directory.Relation;
+import org.example.entities.directory.Tuple;
 import org.example.util.CommonUtil;
 
 import java.nio.file.Files;
@@ -46,10 +47,14 @@ public class Main {
             System.out.println(headerString);
 
             System.out.println("\nTUPLES:");
-            page.tupleList.forEach(tuple -> {
+
+            Iterator<Tuple> tuplesIterator = page.getTuplesIterator();
+
+            while(tuplesIterator.hasNext()) {
+                Tuple tuple = tuplesIterator.next();
                 String tupleString = tuple.attributeList.stream().map(attribute -> attribute.getValue().toString()).collect(Collectors.joining(":"));
                 System.out.println(tupleString);
-            });
+            }
 
             System.out.println("\n---------------------------------------------------------");
         }

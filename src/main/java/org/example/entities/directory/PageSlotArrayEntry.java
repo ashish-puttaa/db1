@@ -8,8 +8,8 @@ import java.nio.ByteBuffer;
 // TODO: Add the compressed and inplace (or very large values (and blob types?)) flags
 public class PageSlotArrayEntry {
     private boolean hasData;
-    short pageOffset;
-    short tupleLength;
+    public short pageOffset;
+    public short tupleLength;
 
     public PageSlotArrayEntry(short pageOffset, short tupleLength) {
         this.setValue(pageOffset, tupleLength);

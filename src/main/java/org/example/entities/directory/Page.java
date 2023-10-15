@@ -1,11 +1,13 @@
 package org.example.entities.directory;
 
 import org.example.Constants;
+import org.example.iterators.PageTupleIterator;
 import org.example.util.ByteUtil;
 import org.example.util.CommonUtil;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 //TODO: Add page unique identifier which will be maintained in the directory
@@ -73,6 +75,21 @@ public class Page {
 
         byte[] tupleBytes = tuple.serialize();
         System.arraycopy(tupleBytes, 0, this.serializedTuples, offset, desiredLength);
+    }
+
+    public Tuple readTuple(PageSlotArrayEntry slotEntry) {
+        byte[] tupleBytes = new byte[slotEntry.tupleLength];
+        System.arraycopy(Page.this.serializedTuples, slotEntry.pageOffset, tupleBytes, 0, slotEntry.tupleLength);
+        return Tuple.deserialize(tupleBytes, Page.this.columnMetadataArray);
+    }
+
+    public Tuple readTuple(int slotIndex) {
+        PageSlotArrayEntry slot = this.slotArray.getSlot(slotIndex);
+        return this.readTuple(slot);
+    }
+
+    public Iterator<Tuple> getTuplesIterator() {
+        return new PageTupleIterator(this, this.slotArray.getIterator());
     }
 
     public static class PageFullException extends Exception {}
