@@ -88,6 +88,8 @@ public class PageHolesMap {
     }
 
     public void shiftTupleStartOffsetOnePositionRight() {
+        int bytesNewlyOccupiedBySlotArray = PageSlotArrayEntry.getSerializedLength();
+
         if(this.optionalTupleStartOffsetHoleLength.isPresent()) {
             Short tupleStartOffsetHoleLength = this.optionalTupleStartOffsetHoleLength.get();
 
@@ -95,11 +97,11 @@ public class PageHolesMap {
                 List<Short> holeOffsets = this.holes.get(tupleStartOffsetHoleLength);
                 holeOffsets.remove(this.tupleOffsetStart);
 
-                short newOffsetZeroHoleLength = (short) (tupleStartOffsetHoleLength - 1);
+                short newOffsetZeroHoleLength = (short) (tupleStartOffsetHoleLength - bytesNewlyOccupiedBySlotArray);
                 this.addHole(newOffsetZeroHoleLength, this.tupleOffsetStart);
 
-                this.tupleOffsetStart++;
-                this.optionalTupleStartOffsetHoleLength = Optional.of((short) (tupleStartOffsetHoleLength - 1));
+                this.tupleOffsetStart = (short) (this.tupleOffsetStart + bytesNewlyOccupiedBySlotArray);
+                this.optionalTupleStartOffsetHoleLength = Optional.of(newOffsetZeroHoleLength);
             }
         }
     }
