@@ -40,4 +40,8 @@ public class Tuple {
 
         return new Tuple(attributeList);
     }
+
+    public int getSerializedLength() {
+        return this.attributeList.stream().mapToInt(Attribute::getSerializedLength).sum();
+    }
 }

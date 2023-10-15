@@ -27,7 +27,7 @@ public class PageSlotArray {
     }
 
     public byte[] serialize() {
-        ByteBuffer byteBuffer = ByteBuffer.allocate(this.slots.size() * PageSlotArrayEntry.getSerializedLength());
+        ByteBuffer byteBuffer = ByteBuffer.allocate(this.getSerializedLength());
 
         for(PageSlotArrayEntry slot: this.slots) {
             byteBuffer.put(slot.serialize());
@@ -54,6 +54,10 @@ public class PageSlotArray {
 
     public static short getTupleOffsetStart(int slotArrayOffsetStart, int numSlots) {
         return (short) (slotArrayOffsetStart + getSerializedLength(numSlots));
+    }
+
+    public int getSerializedLength() {
+        return getSerializedLength(this.slots.size());
     }
 
     public static int getSerializedLength(int numSlots) {

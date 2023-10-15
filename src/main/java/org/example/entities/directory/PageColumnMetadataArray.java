@@ -19,7 +19,7 @@ public class PageColumnMetadataArray {
     }
 
     public byte[] serialize() {
-        ByteBuffer byteBuffer = ByteBuffer.allocate(this.metadataArray.length * PageColumnMetadata.getSerializedLength());
+        ByteBuffer byteBuffer = ByteBuffer.allocate(this.getSerializedLength());
 
         Arrays.stream(this.metadataArray)
                 .map(PageColumnMetadata::serialize)
@@ -37,6 +37,10 @@ public class PageColumnMetadataArray {
                 .toArray(PageColumnMetadata[]::new);
 
         return new PageColumnMetadataArray(metadataArray);
+    }
+
+    public int getSerializedLength() {
+        return getSerializedLength(this.metadataArray.length);
     }
 
     public static int getSerializedLength(int numColumns) {
