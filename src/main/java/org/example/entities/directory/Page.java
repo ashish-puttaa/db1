@@ -80,6 +80,8 @@ public class Page {
             if(slotArrayOffsetEndAfterAppend >= offset) {
                 throw new PageFullException();
             }
+
+            this.header.incrementSlotCount();
         }
 
         int slotIndex = this.slotArray.insertSlot(offset, desiredLength);

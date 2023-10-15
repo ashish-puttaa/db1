@@ -44,4 +44,8 @@ public class PageHeader {
 
         return columnCountLength + pageIdentifierLength + slotCountLength;
     }
+
+    public void incrementSlotCount() {
+        this.slotCount++;
+    }
 }
