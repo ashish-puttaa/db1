@@ -94,6 +94,10 @@ public class Page {
         return slotIndex;
     }
 
+    public void removeTuple(int slotIndex) {
+        this.slotArray.emptySlot(slotIndex);
+    }
+
     public Tuple readTuple(PageSlotArrayEntry slotEntry) {
         byte[] tupleBytes = new byte[slotEntry.tupleLength];
         System.arraycopy(Page.this.serializedTuples, slotEntry.pageOffset, tupleBytes, 0, slotEntry.tupleLength);
