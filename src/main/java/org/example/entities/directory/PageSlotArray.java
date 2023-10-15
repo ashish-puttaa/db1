@@ -49,7 +49,7 @@ public class PageSlotArray {
     }
 
     public short getTupleOffsetStart() {
-        return getTupleOffsetStart(this.slots.size(), this.slotArrayOffsetStart);
+        return getTupleOffsetStart(this.slotArrayOffsetStart, this.slots.size());
     }
 
     public static short getTupleOffsetStart(int slotArrayOffsetStart, int numSlots) {
