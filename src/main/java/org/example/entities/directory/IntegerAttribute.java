@@ -31,6 +31,11 @@ public class IntegerAttribute implements Attribute<Integer> {
         return byteBuffer.array();
     }
 
+    @Override
+    public int getSerializedLength() {
+        return this.getType().size;
+    }
+
     public static IntegerAttribute deserialize(byte[] bytes) {
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         return new IntegerAttribute(buffer.getInt());

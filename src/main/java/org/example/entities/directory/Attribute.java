@@ -5,6 +5,7 @@ public interface Attribute<T> {
     void setValue(T value);
     AttributeType getType();
     byte[] serialize();
+    int getSerializedLength();
 
     static Attribute<?> deserialize(byte[] bytes) {
         // Implementing classes must provide their own deserialization logic

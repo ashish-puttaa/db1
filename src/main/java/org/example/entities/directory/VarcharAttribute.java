@@ -40,6 +40,11 @@ public class VarcharAttribute implements Attribute<String> {
         return byteBuffer.array();
     }
 
+    @Override
+    public int getSerializedLength() {
+        return Short.BYTES + this.value.getBytes(StandardCharsets.UTF_8).length;
+    }
+
     public static VarcharAttribute deserialize(byte[] bytes) {
         ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
 

@@ -31,6 +31,11 @@ public class CharAttribute implements Attribute<String> {
         return ByteUtil.convertToPaddedByteArray(this.value, this.getType().size);
     }
 
+    @Override
+    public int getSerializedLength() {
+        return this.getType().size;
+    }
+
     public static CharAttribute deserialize(byte[] bytes) {
         String value = new String(bytes, StandardCharsets.UTF_8).trim();
         return new CharAttribute(value);
