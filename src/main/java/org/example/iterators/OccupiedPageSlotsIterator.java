@@ -19,7 +19,7 @@ public class OccupiedPageSlotsIterator implements Iterator<PageSlotArrayEntry> {
 
         for (int nextIndex = this.currentIndex + 1; nextIndex < slots.size(); nextIndex++) {
             if (!slots.get(nextIndex).isEmpty()) {
-                this.currentIndex = nextIndex;
+                this.currentIndex = nextIndex - 1;
                 return true;
             }
         }

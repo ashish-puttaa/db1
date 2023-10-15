@@ -98,7 +98,7 @@ public class PageSlotArray {
         }
 
         if(!hasPageEndOffset) {
-            short pageEndOffset = (short) (Constants.PAGE_SIZE - slotArrayOffsetStart);
+            short pageEndOffset = (short) (Constants.PAGE_SIZE);
             PageSlotArrayEntry pageEndSlot = new PageSlotArrayEntry(pageEndOffset, (short) 0);
             updatedSlotsList.add(pageEndSlot);
         }

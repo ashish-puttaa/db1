@@ -30,7 +30,7 @@ public class Page {
 
     public Page(int pageIdentifier, List<AttributeType> attributeTypeList) {
         byte numColumns = (byte) attributeTypeList.size();
-        short pageSlotArrayOffsetStart = (short) (PageHeader.getSerializedLength() + PageColumnMetadataArray.getSerializedLength(numColumns) + 1);
+        short pageSlotArrayOffsetStart = (short) (PageHeader.getSerializedLength() + PageColumnMetadataArray.getSerializedLength(numColumns));
 
         this.header = new PageHeader(numColumns, pageIdentifier);;
         this.columnMetadataArray = PageColumnMetadataArray.fromAttributes(attributeTypeList);;
@@ -50,7 +50,7 @@ public class Page {
         PageColumnMetadataArray columnMetadataArray = PageColumnMetadataArray.deserialize(columnMetadataArrayBytes, header.columnCount);
 
         byte[] slotArrayBytes = ByteUtil.readNBytes(byteBuffer, PageSlotArray.getSerializedLength(header.slotCount));
-        short slotArrayOffsetStart = (short) (headerBytes.length + columnMetadataArrayBytes.length + 1);
+        short slotArrayOffsetStart = (short) (headerBytes.length + columnMetadataArrayBytes.length);
         PageSlotArray slotArray = PageSlotArray.deserialize(slotArrayBytes, header.slotCount, slotArrayOffsetStart);
 
         byte[] tupleBytes = ByteUtil.readNBytes(byteBuffer, byteBuffer.remaining());
@@ -86,12 +86,13 @@ public class Page {
 
         int slotIndex = this.slotArray.insertSlot(offset, desiredLength);
 
-        byte[] tupleBytes = tuple.serialize();
-        System.arraycopy(tupleBytes, 0, this.serializedTuples, offset, desiredLength);
-
         if(isSlotArrayAppend) {
             this.serializedTuples = ByteUtil.shrinkByteArrayFromFront(this.serializedTuples, PageSlotArrayEntry.getSerializedLength());
         }
+
+        byte[] tupleBytes = tuple.serialize();
+        int tupleOffset = offset - this.slotArray.getTupleOffsetStart();
+        System.arraycopy(tupleBytes, 0, this.serializedTuples, tupleOffset, desiredLength);
 
         return slotIndex;
     }
@@ -102,8 +103,10 @@ public class Page {
 
     public Tuple readTuple(PageSlotArrayEntry slotEntry) {
         byte[] tupleBytes = new byte[slotEntry.tupleLength];
-        System.arraycopy(Page.this.serializedTuples, slotEntry.pageOffset, tupleBytes, 0, slotEntry.tupleLength);
-        return Tuple.deserialize(tupleBytes, Page.this.columnMetadataArray);
+
+        int tupleBytesOffset = slotEntry.pageOffset - this.slotArray.getTupleOffsetStart();
+        System.arraycopy(this.serializedTuples, tupleBytesOffset, tupleBytes, 0, slotEntry.tupleLength);
+        return Tuple.deserialize(tupleBytes, this.columnMetadataArray);
     }
 
     public Tuple readTuple(int slotIndex) {
