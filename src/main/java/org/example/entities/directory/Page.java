@@ -19,13 +19,13 @@ public class Page {
     public PageHeader header;
     public PageColumnMetadataArray columnMetadataArray;
     public PageSlotArray slotArray;
-    public List<Tuple> tupleList;
+    public byte[] serializedTuples;
 
-    private Page(PageHeader header, PageColumnMetadataArray columnMetadataArray, PageSlotArray slotArray, List<Tuple> tupleList) {
+    private Page(PageHeader header, PageColumnMetadataArray columnMetadataArray, PageSlotArray slotArray, byte[] serializedTuples) {
         this.header = header;
         this.columnMetadataArray = columnMetadataArray;
         this.slotArray = slotArray;
-        this.tupleList = tupleList;
+        this.serializedTuples = serializedTuples;
     }
 
     public Page(int pageIdentifier, List<AttributeType> attributeTypeList) {
@@ -35,7 +35,9 @@ public class Page {
         this.header = new PageHeader(numColumns, pageIdentifier);;
         this.columnMetadataArray = PageColumnMetadataArray.fromAttributes(attributeTypeList);;
         this.slotArray = new PageSlotArray(pageSlotArrayOffsetStart);
-        this.tupleList = new ArrayList<>();
+
+        int tupleLength = Constants.PAGE_SIZE - PageHeader.getSerializedLength() - this.columnMetadataArray.getSerializedLength() - this.slotArray.getSerializedLength();
+        this.serializedTuples = new byte[tupleLength];
     }
 
     public static Page deserialize(byte[] bytes) {
@@ -51,15 +53,9 @@ public class Page {
         short slotArrayOffsetStart = (short) (headerBytes.length + columnMetadataArrayBytes.length + 1);
         PageSlotArray slotArray = PageSlotArray.deserialize(slotArrayBytes, header.slotCount, slotArrayOffsetStart);
 
-        byte[] tupleListBytes = ByteUtil.readNBytes(byteBuffer, columnMetadataArray.getTupleLength() * header.slotCount);
+        byte[] tupleBytes = ByteUtil.readNBytes(byteBuffer, byteBuffer.remaining());
 
-        List<byte[]> tupleBytesList = CommonUtil.splitByteArray(tupleListBytes, columnMetadataArray.getTupleLength());
-
-        List<Tuple> tupleList = tupleBytesList.stream()
-                .map(tupleBytes -> Tuple.deserialize(tupleBytes, columnMetadataArray))
-                .toList();
-
-        return new Page(header, columnMetadataArray, slotArray, tupleList);
+        return new Page(header, columnMetadataArray, slotArray, tupleBytes);
     }
 
     public byte[] serialize() {
@@ -67,11 +63,17 @@ public class Page {
         byteBuffer.put(this.header.serialize());
         byteBuffer.put(this.columnMetadataArray.serialize());
         byteBuffer.put(this.slotArray.serialize());
-        this.tupleList.stream().map(Tuple::serialize).forEach(byteBuffer::put);
+        byteBuffer.put(this.serializedTuples);
         return byteBuffer.array();
     }
 
-    public int getTupleLength() {
-        return this.columnMetadataArray.getTupleLength();
+    public void insertTuple(Tuple tuple) throws PageFullException {
+        short desiredLength = (short) tuple.getSerializedLength();
+        short offset = this.slotArray.getHole(desiredLength).orElseThrow(PageFullException::new);
+
+        byte[] tupleBytes = tuple.serialize();
+        System.arraycopy(tupleBytes, 0, this.serializedTuples, offset, desiredLength);
     }
+
+    public static class PageFullException extends Exception {}
 }

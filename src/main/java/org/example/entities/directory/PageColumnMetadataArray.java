@@ -14,10 +14,6 @@ public class PageColumnMetadataArray {
         this.metadataArray = metadataArray;
     }
 
-    public int getTupleLength() {
-        return Arrays.stream(this.metadataArray).mapToInt(columnMetaData -> columnMetaData.attributeType.size).sum();
-    }
-
     public byte[] serialize() {
         ByteBuffer byteBuffer = ByteBuffer.allocate(this.getSerializedLength());
 

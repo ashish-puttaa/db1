@@ -29,38 +29,38 @@ public class CommonUtil {
 
     public static Page generateSamplePage(int id) {
         List<AttributeType> attributeTypes = Arrays.asList(AttributeType.CHAR, AttributeType.INTEGER, AttributeType.CHAR);
-
         Page page = new Page(id, attributeTypes);
 
-        List<Tuple> tupleList = new ArrayList<>();
+        try {
+            Random random = new Random();
 
-        Random random = new Random();
-        short numTuples = (short) (Constants.PAGE_SIZE / page.getTupleLength());
+            for(int i=0; ; i++) {
+                List<Attribute<?>> attributeList = new ArrayList<>();
 
-        for(int i=0; i<numTuples; i++) {
-            List<Attribute<?>> attributeList = new ArrayList<>();
+                for(AttributeType type: attributeTypes) {
+                    switch (type) {
+                        case CHAR -> {
+                            double lowerBound = 0.25;
+                            double upperBound = 0.75;
+                            double randomPercentage = lowerBound + (upperBound - lowerBound) * random.nextDouble();
 
-            for(AttributeType type: attributeTypes) {
-                switch (type) {
-                    case CHAR -> {
-                        double lowerBound = 0.25;
-                        double upperBound = 0.75;
-                        double randomPercentage = lowerBound + (upperBound - lowerBound) * random.nextDouble();
-
-                        int length = (int) (AttributeType.CHAR.size * randomPercentage);
-                        String prefix = String.format("string:%d-%d__", id, i+1);
-                        String content = CommonUtil.generateUTF8String(length - prefix.length());
-                        attributeList.add(new CharAttribute(prefix + content));
-                    }
-                    case INTEGER -> {
-                        int content = random.nextInt();
-                        attributeList.add(new IntegerAttribute(content));
+                            int length = (int) (AttributeType.CHAR.size * randomPercentage);
+                            String prefix = String.format("string:%d-%d__", id, i+1);
+                            String content = CommonUtil.generateUTF8String(length - prefix.length());
+                            attributeList.add(new CharAttribute(prefix + content));
+                        }
+                        case INTEGER -> {
+                            int content = random.nextInt();
+                            attributeList.add(new IntegerAttribute(content));
+                        }
                     }
                 }
-            }
 
-            tupleList.add(new Tuple(attributeList));
+                Tuple tuple = new Tuple(attributeList);
+                page.insertTuple(tuple);
+            }
         }
+        catch (Page.PageFullException ignored) {}
 
         return page;
     }
