@@ -14,23 +14,12 @@ import java.util.stream.Collectors;
 public class Main {
     private static final Path RELATION_FILE_PATH = Path.of("relation-file-1");
 
-
-    private static List<Page> generatePages(int num) {
-        List<Page> pageList = new ArrayList<>();
-
-        for(int i=0; i<num; i++) {
-            Page page = MockPageFactory.generatePage(i+1);
-            pageList.add(page);
-        }
-
-        return pageList;
-    }
-
     public static void main(String[] args) throws Exception {
 
         Files.write(RELATION_FILE_PATH, new byte[0], StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 
-        for(Page page: generatePages(10)) {
+        for(int i=0; i<10; i++) {
+            Page page = MockPageFactory.generatePage(i+1);
             Files.write(RELATION_FILE_PATH, page.serialize(), StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.APPEND);
         }
 
