@@ -3,7 +3,7 @@ package org.example;
 import org.example.entities.directory.Page;
 import org.example.entities.directory.Relation;
 import org.example.entities.directory.Tuple;
-import org.example.util.CommonUtil;
+import org.example.util.MockPageFactory;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,7 +19,7 @@ public class Main {
         List<Page> pageList = new ArrayList<>();
 
         for(int i=0; i<num; i++) {
-            Page page = CommonUtil.generateSamplePage(i+1);
+            Page page = MockPageFactory.generatePage(i+1);
             pageList.add(page);
         }
 

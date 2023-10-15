@@ -1,70 +1,11 @@
 package org.example.util;
 
-import org.example.Constants;
-import org.example.entities.directory.*;
-
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Path;
 import java.util.*;
 
 public class CommonUtil {
-    public static String generateUTF8String(int length) {
-        return generateUTF8String(length, "", "");
-    }
-
-    public static String generateUTF8String(int length, String prefix, String suffix) {
-        StringBuilder stringBuilder = new StringBuilder();
-        Random random = new Random();
-
-        int desiredLength = length - prefix.getBytes().length - suffix.getBytes().length;
-
-        while (stringBuilder.toString().getBytes().length < desiredLength) {
-            char randomChar = (char) (random.nextInt(26) + 'a');  // Generates a random lowercase letter
-            stringBuilder.append(randomChar);
-        }
-
-        return prefix + stringBuilder + suffix;
-    }
-
-    public static Page generateSamplePage(int id) {
-        List<AttributeType> attributeTypes = Arrays.asList(AttributeType.CHAR, AttributeType.INTEGER, AttributeType.CHAR);
-        Page page = new Page(id, attributeTypes);
-
-        try {
-            Random random = new Random();
-
-            for(int i=0; ; i++) {
-                List<Attribute<?>> attributeList = new ArrayList<>();
-
-                for(AttributeType type: attributeTypes) {
-                    switch (type) {
-                        case CHAR -> {
-                            double lowerBound = 0.25;
-                            double upperBound = 0.75;
-                            double randomPercentage = lowerBound + (upperBound - lowerBound) * random.nextDouble();
-
-                            int length = (int) (AttributeType.CHAR.size * randomPercentage);
-                            String prefix = String.format("string:%d-%d__", id, i+1);
-                            String content = CommonUtil.generateUTF8String(length - prefix.length());
-                            attributeList.add(new CharAttribute(prefix + content));
-                        }
-                        case INTEGER -> {
-                            int content = random.nextInt();
-                            attributeList.add(new IntegerAttribute(content));
-                        }
-                    }
-                }
-
-                Tuple tuple = new Tuple(attributeList);
-                page.insertTuple(tuple);
-            }
-        }
-        catch (Page.PageFullException ignored) {}
-
-        return page;
-    }
-
     @Deprecated
     public static List<byte[]> readFileAsChunks(Path path, int chunkSize) throws IOException {
         try (RandomAccessFile randomAccessFile = new RandomAccessFile(path.toFile(), "r")) {
