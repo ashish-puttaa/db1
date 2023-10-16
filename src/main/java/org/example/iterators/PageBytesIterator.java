@@ -7,18 +7,18 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-class PageBytesIterator implements Iterator<byte[]> {
+public class PageBytesIterator implements Iterator<byte[]> {
     private static final Logger LOGGER = Logger.getLogger(PageBytesIterator.class.getName());
 
-    private final RandomAccessFile relationFile;
-    private final long relationFileLength;
+    private final RandomAccessFile file;
+    private final long fileLength;
     private final int pageSize;
     private long currentPageNumber = -1;
 
-    public PageBytesIterator(Path relationPath, int pageSize) throws IOException {
-        this.relationFile = new RandomAccessFile(relationPath.toFile(), "r");
+    public PageBytesIterator(Path filePath, int pageSize) throws IOException {
+        this.file = new RandomAccessFile(filePath.toFile(), "r");
         this.pageSize = pageSize;
-        this.relationFileLength = this.relationFile.length();
+        this.fileLength = this.file.length();
     }
 
     @Override
@@ -26,11 +26,11 @@ class PageBytesIterator implements Iterator<byte[]> {
         long nextPageNumber = this.currentPageNumber + 1;
         // long nextPageOffsetStart = nextPageNumber * this.pageSize;
         long nextPageOffsetEnd = (nextPageNumber + 1) * this.pageSize - 1;
-        boolean hasNext = this.relationFileLength >= nextPageOffsetEnd;
+        boolean hasNext = this.fileLength >= nextPageOffsetEnd;
 
         if(!hasNext) {
             try {
-                this.relationFile.close();
+                this.file.close();
             }
             catch (IOException exception) {
                 LOGGER.log(Level.SEVERE, "PageIterator :: hasNext :: ", exception);
@@ -59,8 +59,8 @@ class PageBytesIterator implements Iterator<byte[]> {
     private byte[] readPage(long zeroIndexedPageNumber) throws IOException {
         long offset = zeroIndexedPageNumber * this.pageSize;
         byte[] buffer = new byte[this.pageSize];
-        this.relationFile.seek(offset);
-        this.relationFile.readFully(buffer);
+        this.file.seek(offset);
+        this.file.readFully(buffer);
         return buffer;
     }
 }

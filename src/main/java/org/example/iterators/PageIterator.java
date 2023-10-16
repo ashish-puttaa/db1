@@ -15,7 +15,7 @@ public class PageIterator implements Iterator<Page> {
 
     @Override
     public boolean hasNext() {
-        return pageBytesIterator.hasNext();
+        return this.pageBytesIterator.hasNext();
     }
 
     @Override
