@@ -1,21 +1,21 @@
 package org.example.iterators;
 
-import org.example.entities.directory.PageSlotArrayEntry;
+import org.example.entities.directory.PageSlot;
 
 import java.util.Iterator;
 import java.util.List;
 
-public class OccupiedPageSlotsIterator implements Iterator<PageSlotArrayEntry> {
-    private List<PageSlotArrayEntry> slots;
+public class OccupiedPageSlotsIterator implements Iterator<PageSlot> {
+    private final List<PageSlot> slots;
     private int currentIndex = -1;
 
-    public OccupiedPageSlotsIterator(List<PageSlotArrayEntry> slots) {
+    public OccupiedPageSlotsIterator(List<PageSlot> slots) {
         this.slots = slots;
     }
 
     @Override
     public boolean hasNext() {
-        List<PageSlotArrayEntry> slots = this.slots;
+        List<PageSlot> slots = this.slots;
 
         for (int nextIndex = this.currentIndex + 1; nextIndex < slots.size(); nextIndex++) {
             if (!slots.get(nextIndex).isEmpty()) {
@@ -28,14 +28,14 @@ public class OccupiedPageSlotsIterator implements Iterator<PageSlotArrayEntry> {
     }
 
     @Override
-    public PageSlotArrayEntry next() {
+    public PageSlot next() {
         if (!this.hasNext()) {
             throw new IndexOutOfBoundsException("No more entries with data");
         }
 
-        PageSlotArrayEntry nextEntry = this.slots.get(this.currentIndex + 1);
+        PageSlot nextSlot = this.slots.get(this.currentIndex + 1);
         this.currentIndex++;
-        return nextEntry;
+        return nextSlot;
     }
 
     @Override

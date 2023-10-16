@@ -1,16 +1,16 @@
 package org.example.iterators;
 
 import org.example.entities.directory.Page;
-import org.example.entities.directory.PageSlotArrayEntry;
+import org.example.entities.directory.PageSlot;
 import org.example.entities.directory.PageTuple;
 
 import java.util.Iterator;
 
 public class PageTupleIterator implements Iterator<PageTuple> {
     private final Page page;
-    private final Iterator<PageSlotArrayEntry> occupiedSlotsIterator;
+    private final Iterator<PageSlot> occupiedSlotsIterator;
 
-    public PageTupleIterator(Page page, Iterator<PageSlotArrayEntry> occupiedSlotsIterator) {
+    public PageTupleIterator(Page page, Iterator<PageSlot> occupiedSlotsIterator) {
         this.page = page;
         this.occupiedSlotsIterator = occupiedSlotsIterator;
     }
@@ -26,8 +26,8 @@ public class PageTupleIterator implements Iterator<PageTuple> {
             throw new IndexOutOfBoundsException("No more entries with data");
         }
 
-        PageSlotArrayEntry slotEntry = this.occupiedSlotsIterator.next();
-        return this.page.readTuple(slotEntry);
+        PageSlot slot = this.occupiedSlotsIterator.next();
+        return this.page.readTuple(slot);
     }
 
     @Override

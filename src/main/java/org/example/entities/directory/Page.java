@@ -75,7 +75,7 @@ public class Page {
 
         if(isSlotArrayAppend) {
             int slotArrayOffsetEnd = this.slotArray.getTupleOffsetStart() - 1;
-            int slotArrayOffsetEndAfterAppend = slotArrayOffsetEnd + PageSlotArrayEntry.getSerializedLength();
+            int slotArrayOffsetEndAfterAppend = slotArrayOffsetEnd + PageSlot.getSerializedLength();
 
             if(slotArrayOffsetEndAfterAppend >= offset) {
                 throw new PageFullException();
@@ -87,7 +87,7 @@ public class Page {
         int slotIndex = this.slotArray.insertSlot(offset, desiredLength);
 
         if(isSlotArrayAppend) {
-            this.serializedTuples = ByteUtil.shrinkByteArrayFromFront(this.serializedTuples, PageSlotArrayEntry.getSerializedLength());
+            this.serializedTuples = ByteUtil.shrinkByteArrayFromFront(this.serializedTuples, PageSlot.getSerializedLength());
         }
 
         byte[] tupleBytes = tuple.serialize();
@@ -101,7 +101,7 @@ public class Page {
         this.slotArray.emptySlot(slotIndex);
     }
 
-    public PageTuple readTuple(PageSlotArrayEntry slotEntry) {
+    public PageTuple readTuple(PageSlot slotEntry) {
         byte[] tupleBytes = new byte[slotEntry.tupleLength];
 
         int tupleBytesOffset = slotEntry.pageOffset - this.slotArray.getTupleOffsetStart();
@@ -110,7 +110,7 @@ public class Page {
     }
 
     public PageTuple readTuple(int slotIndex) {
-        PageSlotArrayEntry slot = this.slotArray.getSlot(slotIndex);
+        PageSlot slot = this.slotArray.getSlot(slotIndex);
         return this.readTuple(slot);
     }
 

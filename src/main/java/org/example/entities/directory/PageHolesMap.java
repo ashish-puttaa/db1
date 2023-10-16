@@ -12,7 +12,7 @@ public class PageHolesMap {
     private Short tupleOffsetStart;
     private Optional<Short> optionalTupleStartOffsetHoleLength = Optional.empty();
 
-    public PageHolesMap(List<PageSlotArrayEntry> slotsList, short tupleOffsetStart) {
+    public PageHolesMap(List<PageSlot> slotsList, short tupleOffsetStart) {
         this.holes = this.constructPageHolesMap(slotsList, tupleOffsetStart);
         this.tupleOffsetStart = tupleOffsetStart;
     }
@@ -53,22 +53,22 @@ public class PageHolesMap {
         this.holes.computeIfAbsent(holeLength, k -> new ArrayList<>()).add(holeOffset);
     }
 
-    private SortedMap<Short, List<Short>> constructPageHolesMap(List<PageSlotArrayEntry> slotsList, short tupleOffsetStart) {
+    private SortedMap<Short, List<Short>> constructPageHolesMap(List<PageSlot> slotsList, short tupleOffsetStart) {
         SortedMap<Short, List<Short>> holesMap = new TreeMap<>();
 
-        PageSlotArrayEntry[] nonEmptySlotsArray = slotsList.stream().filter(entry -> !entry.isEmpty()).toArray(PageSlotArrayEntry[]::new);
-        PageSlotArrayEntry[] sortedSlotArray = this.sortSlotArrayByOffset(nonEmptySlotsArray);
+        PageSlot[] nonEmptySlotsArray = slotsList.stream().filter(slot -> !slot.isEmpty()).toArray(PageSlot[]::new);
+        PageSlot[] sortedSlotArray = this.sortSlotArrayByOffset(nonEmptySlotsArray);
 
         for(int i=1; i<sortedSlotArray.length; i++) {
-            PageSlotArrayEntry previousEntry = sortedSlotArray[i-1];
-            PageSlotArrayEntry currentEntry = sortedSlotArray[i];
+            PageSlot previousSlot = sortedSlotArray[i-1];
+            PageSlot currentSlot = sortedSlotArray[i];
 
-            short previousEntryOffsetEnd = (short) (previousEntry.pageOffset + previousEntry.tupleLength - 1);
-            boolean hasGap = currentEntry.pageOffset > previousEntryOffsetEnd + 1;
+            short previousEntryOffsetEnd = (short) (previousSlot.pageOffset + previousSlot.tupleLength - 1);
+            boolean hasGap = currentSlot.pageOffset > previousEntryOffsetEnd + 1;
 
             if(hasGap) {
                 short holeStartOffset = (short) (previousEntryOffsetEnd + 1);
-                short holeLength = (short) (currentEntry.pageOffset - holeStartOffset);
+                short holeLength = (short) (currentSlot.pageOffset - holeStartOffset);
 
                 holesMap.computeIfAbsent(holeLength, k -> new ArrayList<>()).add(holeStartOffset);
 
@@ -81,14 +81,14 @@ public class PageHolesMap {
         return holesMap;
     }
 
-    private PageSlotArrayEntry[] sortSlotArrayByOffset(PageSlotArrayEntry[] slotArray) {
+    private PageSlot[] sortSlotArrayByOffset(PageSlot[] slotArray) {
         return Arrays.stream(slotArray)
-                .sorted(Comparator.comparingInt(entry -> entry.pageOffset))
-                .toArray(PageSlotArrayEntry[]::new);
+                .sorted(Comparator.comparingInt(slot -> slot.pageOffset))
+                .toArray(PageSlot[]::new);
     }
 
     public void shiftTupleStartOffsetOnePositionRight() {
-        int bytesNewlyOccupiedBySlotArray = PageSlotArrayEntry.getSerializedLength();
+        int bytesNewlyOccupiedBySlotArray = PageSlot.getSerializedLength();
 
         if(this.optionalTupleStartOffsetHoleLength.isPresent()) {
             Short tupleStartOffsetHoleLength = this.optionalTupleStartOffsetHoleLength.get();
