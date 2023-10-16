@@ -1,6 +1,7 @@
 package org.example.iterators;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.logging.Level;
