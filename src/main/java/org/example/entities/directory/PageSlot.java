@@ -7,22 +7,25 @@ import java.nio.ByteBuffer;
 
 // TODO: Add the compressed and inplace (or very large values (and blob types?)) flags
 public class PageSlot {
+    public final short slotIndex;
     private boolean hasData;
     public short pageOffset;
     public short tupleLength;
 
-    public PageSlot(short pageOffset, short tupleLength) {
-        this.setValue(pageOffset, tupleLength);
+    public PageSlot(short slotIndex, short pageOffset, short tupleLength) {
+        this(slotIndex, true, pageOffset, tupleLength);
     }
 
-    public PageSlot() {
-        this.setToEmpty();
-    }
-
-    private PageSlot(boolean hasData, short pageOffset, short tupleLength) {
+    private PageSlot(short slotIndex, boolean hasData, short pageOffset, short tupleLength) {
+        this.slotIndex = slotIndex;
         this.hasData = hasData;
         this.pageOffset = pageOffset;
         this.tupleLength = tupleLength;
+    }
+
+    private PageSlot(short slotIndex) {
+        this.slotIndex = slotIndex;
+        this.setToEmpty();
     }
 
     public byte[] serialize() {
@@ -33,12 +36,17 @@ public class PageSlot {
         return byteBuffer.array();
     }
 
-    public static PageSlot deserialize(byte[] bytes) {
+    public static PageSlot deserialize(byte[] bytes, short slotIndex) {
         ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
+
         boolean hasData = ByteUtil.convertByteToBoolean(byteBuffer.get());
+        if(!hasData) {
+            return new PageSlot(slotIndex);
+        }
+
         short pageOffset = byteBuffer.getShort();
         short tupleLength = byteBuffer.getShort();
-        return new PageSlot(hasData, pageOffset, tupleLength);
+        return new PageSlot(slotIndex, true, pageOffset, tupleLength);
     }
 
     public static int getSerializedLength() {
