@@ -16,7 +16,7 @@ public class MockPageFactory {
         Faker faker = new Faker();
 
         try {
-            for(int i=0; ; i++) {
+            for(int i=0; i<10 ; i++) {
                 List<Attribute<?>> attributeList = Arrays.asList(
                         new VarcharAttribute(faker.name().fullName()),
                         new IntegerAttribute(faker.number().numberBetween(5, 80)),

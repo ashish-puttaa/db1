@@ -29,20 +29,23 @@ public class Main {
         while(pageIterator.hasNext()) {
             Page page = pageIterator.next();
 
+            ArrayList<Tuple> tuplesList = new ArrayList<>();
+            Iterator<Tuple> tuplesIterator = page.getTuplesIterator();
+            while(tuplesIterator.hasNext()) {
+                tuplesList.add(tuplesIterator.next());
+            }
+
             System.out.printf("\nPAGE %d:\n", page.header.pageIdentifier);
 
             System.out.println("\nHEADER:");
             String headerString = Arrays.stream(page.columnMetadataArray.metadataArray).map(column -> column.columnNumber + "-" + column.attributeType).collect(Collectors.joining(", "));
             System.out.println(headerString);
 
-            System.out.println("\nTUPLES:");
+            System.out.printf("\nTUPLES: %d\n", tuplesList.size());
             String format = "%-32s %-7s %-80s%n";
             System.out.printf(format, "Name", "Age", "Address");
 
-            Iterator<Tuple> tuplesIterator = page.getTuplesIterator();
-
-            while(tuplesIterator.hasNext()) {
-                Tuple tuple = tuplesIterator.next();
+            for(Tuple tuple: tuplesList) {
                 List<String> values = tuple.attributeList.stream().map(attribute -> attribute.getValue().toString()).toList();
                 System.out.printf(format, values.toArray());
             }
