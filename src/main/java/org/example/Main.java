@@ -1,8 +1,8 @@
 package org.example;
 
 import org.example.entities.directory.Page;
+import org.example.entities.directory.PageTuple;
 import org.example.entities.directory.Relation;
-import org.example.entities.directory.Tuple;
 import org.example.util.MockPageFactory;
 
 import java.nio.file.Files;
@@ -29,8 +29,8 @@ public class Main {
         while(pageIterator.hasNext()) {
             Page page = pageIterator.next();
 
-            ArrayList<Tuple> tuplesList = new ArrayList<>();
-            Iterator<Tuple> tuplesIterator = page.getTuplesIterator();
+            ArrayList<PageTuple> tuplesList = new ArrayList<>();
+            Iterator<PageTuple> tuplesIterator = page.getTuplesIterator();
             while(tuplesIterator.hasNext()) {
                 tuplesList.add(tuplesIterator.next());
             }
@@ -45,7 +45,7 @@ public class Main {
             String format = "%-32s %-7s %-80s%n";
             System.out.printf(format, "Name", "Age", "Address");
 
-            for(Tuple tuple: tuplesList) {
+            for(PageTuple tuple: tuplesList) {
                 List<String> values = tuple.attributeList.stream().map(attribute -> attribute.getValue().toString()).toList();
                 System.out.printf(format, values.toArray());
             }

@@ -67,7 +67,7 @@ public class Page {
         return byteBuffer.array();
     }
 
-    public int insertTuple(Tuple tuple) throws PageFullException {
+    public int insertTuple(PageTuple tuple) throws PageFullException {
         short desiredLength = (short) tuple.getSerializedLength();
         short offset = this.slotArray.getHole(desiredLength).orElseThrow(PageFullException::new);
 
@@ -101,20 +101,20 @@ public class Page {
         this.slotArray.emptySlot(slotIndex);
     }
 
-    public Tuple readTuple(PageSlotArrayEntry slotEntry) {
+    public PageTuple readTuple(PageSlotArrayEntry slotEntry) {
         byte[] tupleBytes = new byte[slotEntry.tupleLength];
 
         int tupleBytesOffset = slotEntry.pageOffset - this.slotArray.getTupleOffsetStart();
         System.arraycopy(this.serializedTuples, tupleBytesOffset, tupleBytes, 0, slotEntry.tupleLength);
-        return Tuple.deserialize(tupleBytes, this.columnMetadataArray);
+        return PageTuple.deserialize(tupleBytes, this.columnMetadataArray);
     }
 
-    public Tuple readTuple(int slotIndex) {
+    public PageTuple readTuple(int slotIndex) {
         PageSlotArrayEntry slot = this.slotArray.getSlot(slotIndex);
         return this.readTuple(slot);
     }
 
-    public Iterator<Tuple> getTuplesIterator() {
+    public Iterator<PageTuple> getTuplesIterator() {
         return new PageTupleIterator(this, this.slotArray.getIterator());
     }
 

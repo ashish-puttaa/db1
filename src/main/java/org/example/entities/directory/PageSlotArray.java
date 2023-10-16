@@ -65,11 +65,11 @@ public class PageSlotArray {
         return numSlots * PageSlotArrayEntry.getSerializedLength();
     }
 
-    public static PageSlotArray fromTupleList(List<Tuple> tupleList, short slotArrayOffsetStart) {
+    public static PageSlotArray fromTupleList(List<PageTuple> tupleList, short slotArrayOffsetStart) {
         List<PageSlotArrayEntry> slotsList = new ArrayList<>();
         short currentOffset = 0;
 
-        for(Tuple tuple: tupleList) {
+        for(PageTuple tuple: tupleList) {
             short tupleOffsetStart = getTupleOffsetStart(slotArrayOffsetStart, tupleList.size());
             short pageOffset = (short) (tupleOffsetStart + currentOffset);
             short tupleLength = (short) tuple.attributeList.stream()

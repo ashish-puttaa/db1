@@ -22,7 +22,7 @@ public class MockPageFactory {
                         new IntegerAttribute(faker.number().numberBetween(5, 80)),
                         new VarcharAttribute(faker.address().fullAddress())
                 );
-                Tuple tuple = new Tuple(attributeList);
+                PageTuple tuple = new PageTuple(attributeList);
                 page.insertTuple(tuple);
             }
         }

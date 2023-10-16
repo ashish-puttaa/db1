@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Tuple {
+public class PageTuple {
     public final List<Attribute<?>> attributeList;
 
-    public Tuple(List<Attribute<?>> attributeList) {
+    public PageTuple(List<Attribute<?>> attributeList) {
         this.attributeList = attributeList;
     }
 
@@ -22,7 +22,7 @@ public class Tuple {
         return byteBuffer.array();
     }
 
-    public static Tuple deserialize(byte[] bytes, PageColumnMetadataArray columnMetadataArray) {
+    public static PageTuple deserialize(byte[] bytes, PageColumnMetadataArray columnMetadataArray) {
         List<Attribute<?>> attributeList = new ArrayList<>(columnMetadataArray.metadataArray.length);
 
         int currentIndex = 0;
@@ -47,7 +47,7 @@ public class Tuple {
             currentIndex = toIndex;
         }
 
-        return new Tuple(attributeList);
+        return new PageTuple(attributeList);
     }
 
     public int getSerializedLength() {
