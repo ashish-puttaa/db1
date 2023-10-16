@@ -8,6 +8,9 @@ public class AttributeFactory {
         else if (type == AttributeType.INTEGER) {
             return IntegerAttribute.deserialize(bytes);
         }
+        else if(type == AttributeType.VARCHAR) {
+            return VarcharAttribute.deserialize(bytes);
+        }
         else {
             return null;
         }

@@ -9,7 +9,7 @@ import java.util.Random;
 
 public class MockPageFactory {
     public static Page generatePage(int pageId) {
-        List<AttributeType> attributeTypes = Arrays.asList(AttributeType.CHAR, AttributeType.INTEGER, AttributeType.CHAR);
+        List<AttributeType> attributeTypes = Arrays.asList(AttributeType.VARCHAR, AttributeType.INTEGER, AttributeType.VARCHAR);
         Page page = new Page(pageId, attributeTypes);
 
         try {
@@ -32,10 +32,14 @@ public class MockPageFactory {
         for (AttributeType type : attributeTypes) {
             switch (type) {
                 case CHAR:
-                    attributeList.add(generateRandomCharAttribute(random, pageId, tupleId));
+                    attributeList.add(new CharAttribute(generateRandomString(random, pageId, tupleId)));
                     break;
                 case INTEGER:
                     attributeList.add(generateRandomIntegerAttribute(random));
+                    break;
+                case VARCHAR:
+                    String value = generateRandomString(random, pageId, tupleId);
+                    attributeList.add(new VarcharAttribute((short) value.length(), value));
                     break;
             }
         }
@@ -43,7 +47,7 @@ public class MockPageFactory {
         return attributeList;
     }
 
-    private static CharAttribute generateRandomCharAttribute(Random random, int pageId, int tupleId) {
+    private static String generateRandomString(Random random, int pageId, int tupleId) {
         double lowerBound = 0.25;
         double upperBound = 0.75;
         double randomPercentage = lowerBound + (upperBound - lowerBound) * random.nextDouble();
@@ -52,7 +56,7 @@ public class MockPageFactory {
         String prefix = String.format("string:%d-%d__", pageId, tupleId);
         String content = generateUTF8String(length - prefix.length());
 
-        return new CharAttribute(prefix + content);
+       return prefix + content;
     }
 
     private static IntegerAttribute generateRandomIntegerAttribute(Random random) {

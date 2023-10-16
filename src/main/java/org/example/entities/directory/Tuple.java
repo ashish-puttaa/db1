@@ -29,9 +29,17 @@ public class Tuple {
 
         for (PageColumnMetadata column : columnMetadataArray.metadataArray) {
             AttributeType attributeType = column.attributeType;
-            int toIndex = Math.min(currentIndex + attributeType.size, bytes.length);
-            byte[] chunk = Arrays.copyOfRange(bytes, currentIndex, toIndex);
+            int toIndex = currentIndex;
 
+            if(attributeType.equals(AttributeType.VARCHAR)) {
+                short length = ByteBuffer.wrap(Arrays.copyOfRange(bytes, currentIndex, currentIndex + Short.BYTES)).getShort();
+                toIndex += Short.BYTES + length;
+            }
+            else {
+                toIndex += attributeType.size;
+            }
+
+            byte[] chunk = Arrays.copyOfRange(bytes, currentIndex, toIndex);
             Attribute<?> attribute = AttributeFactory.createFromBytes(chunk, attributeType);
             attributeList.add(attribute);
 
