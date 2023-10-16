@@ -5,12 +5,15 @@ import org.example.util.ByteUtil;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class PageDirectoryPage {
     private final Map<Integer, PageDirectoryRecord> pageIdMap;
+    private boolean dirty;
 
     public PageDirectoryPage() {
         this.pageIdMap = new HashMap<>();
+        this.dirty = false;
     }
 
     public byte[] serialize() {
@@ -54,9 +57,22 @@ public class PageDirectoryPage {
 
     public void addMapping(int pageId, PageDirectoryRecord pageDirectoryRecord) {
         this.pageIdMap.put(pageId, pageDirectoryRecord);
+        this.dirty = true;
     }
 
-    public PageDirectoryRecord getMapping(int pageId) {
-        return this.pageIdMap.get(pageId);
+    public boolean hasMapping(int pageId) {
+        return this.pageIdMap.containsKey(pageId);
+    }
+
+    public Optional<PageDirectoryRecord> getMapping(int pageId) {
+        if(this.hasMapping(pageId)) {
+            return Optional.of(this.pageIdMap.get(pageId));
+        }
+
+        return Optional.empty();
+    }
+
+    public boolean isDirty() {
+        return this.dirty;
     }
 }
