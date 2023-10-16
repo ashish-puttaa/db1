@@ -36,13 +36,15 @@ public class Main {
             System.out.println(headerString);
 
             System.out.println("\nTUPLES:");
+            String format = "%-32s %-7s %-80s%n";
+            System.out.printf(format, "Name", "Age", "Address");
 
             Iterator<Tuple> tuplesIterator = page.getTuplesIterator();
 
             while(tuplesIterator.hasNext()) {
                 Tuple tuple = tuplesIterator.next();
-                String tupleString = tuple.attributeList.stream().map(attribute -> attribute.getValue().toString()).collect(Collectors.joining(":"));
-                System.out.println(tupleString);
+                List<String> values = tuple.attributeList.stream().map(attribute -> attribute.getValue().toString()).toList();
+                System.out.printf(format, values.toArray());
             }
 
             System.out.println("\n---------------------------------------------------------");

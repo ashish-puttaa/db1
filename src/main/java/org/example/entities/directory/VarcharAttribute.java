@@ -9,8 +9,13 @@ public class VarcharAttribute implements Attribute<String> {
     public short size;
     public String value;
 
-    public VarcharAttribute(short length, String value) {
+    private VarcharAttribute(short length, String value) {
         this.size = length;
+        this.value = value;
+    }
+
+    public VarcharAttribute(String value) {
+        this.size = (short) value.length();
         this.value = value;
     }
 

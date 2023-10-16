@@ -1,5 +1,6 @@
 package org.example.util;
 
+import com.github.javafaker.Faker;
 import org.example.entities.directory.*;
 
 import java.util.ArrayList;
@@ -12,9 +13,15 @@ public class MockPageFactory {
         List<AttributeType> attributeTypes = Arrays.asList(AttributeType.VARCHAR, AttributeType.INTEGER, AttributeType.VARCHAR);
         Page page = new Page(pageId, attributeTypes);
 
+        Faker faker = new Faker();
+
         try {
             for(int i=0; ; i++) {
-                List<Attribute<?>> attributeList = generateAttributesList(attributeTypes, pageId, i+1);
+                List<Attribute<?>> attributeList = Arrays.asList(
+                        new VarcharAttribute(faker.name().fullName()),
+                        new IntegerAttribute(faker.number().numberBetween(5, 80)),
+                        new VarcharAttribute(faker.address().fullAddress())
+                );
                 Tuple tuple = new Tuple(attributeList);
                 page.insertTuple(tuple);
             }
@@ -38,8 +45,7 @@ public class MockPageFactory {
                     attributeList.add(generateRandomIntegerAttribute(random));
                     break;
                 case VARCHAR:
-                    String value = generateRandomString(random, pageId, tupleId);
-                    attributeList.add(new VarcharAttribute((short) value.length(), value));
+                    attributeList.add(new VarcharAttribute(generateRandomString(random, pageId, tupleId)));
                     break;
             }
         }
