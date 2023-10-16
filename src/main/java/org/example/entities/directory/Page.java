@@ -67,7 +67,12 @@ public class Page {
         return byteBuffer.array();
     }
 
-    public int insertTuple(PageTuple tuple) throws PageFullException {
+    private PageTuple.RecordIdentifier constructTupleRecordIdentifier(short slotIndex) {
+        int pageId = this.header.pageIdentifier;
+        return new PageTuple.RecordIdentifier(pageId, slotIndex);
+    }
+
+    public PageTuple.RecordIdentifier insertTuple(PageTuple tuple) throws PageFullException {
         short desiredLength = (short) tuple.getSerializedLength();
         short offset = this.slotArray.getHole(desiredLength).orElseThrow(PageFullException::new);
 
@@ -84,7 +89,7 @@ public class Page {
             this.header.incrementSlotCount();
         }
 
-        int slotIndex = this.slotArray.insertSlot(offset, desiredLength);
+        short slotIndex = this.slotArray.insertSlot(offset, desiredLength);
 
         if(isSlotArrayAppend) {
             this.serializedTuples = ByteUtil.shrinkByteArrayFromFront(this.serializedTuples, PageSlot.getSerializedLength());
@@ -94,7 +99,7 @@ public class Page {
         int tupleOffset = offset - this.slotArray.getTupleOffsetStart();
         System.arraycopy(tupleBytes, 0, this.serializedTuples, tupleOffset, desiredLength);
 
-        return slotIndex;
+        return this.constructTupleRecordIdentifier(slotIndex);
     }
 
     public void removeTuple(int slotIndex) {
@@ -106,7 +111,9 @@ public class Page {
 
         int tupleBytesOffset = slotEntry.pageOffset - this.slotArray.getTupleOffsetStart();
         System.arraycopy(this.serializedTuples, tupleBytesOffset, tupleBytes, 0, slotEntry.tupleLength);
-        return PageTuple.deserialize(tupleBytes, this.columnMetadataArray);
+
+        PageTuple.RecordIdentifier recordId = this.constructTupleRecordIdentifier(slotEntry.slotIndex);
+        return PageTuple.deserialize(tupleBytes, this.columnMetadataArray, recordId);
     }
 
     public PageTuple readTuple(int slotIndex) {

@@ -108,21 +108,21 @@ public class PageSlotArray {
         return new OccupiedPageSlotsIterator(this.slots);
     }
 
-    public Optional<Integer> getEmptySlotIndex() {
+    public Optional<Short> getEmptySlotIndex() {
         for(int i = 0; i<this.slots.size(); i++) {
             if(this.slots.get(i).isEmpty()) {
-                return Optional.of(i);
+                return Optional.of((short) i);
             }
         }
 
         return Optional.empty();
     }
 
-    public int insertSlot(short pageOffset, short tupleLength) {
-        Optional<Integer> optionalEmptySlotIndex = this.getEmptySlotIndex();
+    public short insertSlot(short pageOffset, short tupleLength) {
+        Optional<Short> optionalEmptySlotIndex = this.getEmptySlotIndex();
 
         if(optionalEmptySlotIndex.isPresent()) {
-            int emptySlotIndex = optionalEmptySlotIndex.get();
+            short emptySlotIndex = optionalEmptySlotIndex.get();
             PageSlot slot = this.slots.get(emptySlotIndex);
             slot.setValue(pageOffset, tupleLength);
             return emptySlotIndex;
@@ -131,7 +131,7 @@ public class PageSlotArray {
             short slotIndex = (short) this.slots.size();
             PageSlot slot = new PageSlot(slotIndex, pageOffset, tupleLength);
             this.appendToSlotArray(slot);
-            return this.slots.size() - 1;
+            return (short) (this.slots.size() - 1);
         }
     }
 

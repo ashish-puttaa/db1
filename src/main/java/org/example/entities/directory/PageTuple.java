@@ -6,14 +6,23 @@ import java.util.Arrays;
 import java.util.List;
 
 public class PageTuple {
+    public record RecordIdentifier(int pageId, short slotIndex) {}
+
+    public final RecordIdentifier recordId;
     public final List<Attribute<?>> attributeList;
 
     public PageTuple(List<Attribute<?>> attributeList) {
+        this.recordId = null;
+        this.attributeList = attributeList;
+    }
+
+    private PageTuple(RecordIdentifier recordId, List<Attribute<?>> attributeList) {
+        this.recordId = recordId;
         this.attributeList = attributeList;
     }
 
     public byte[] serialize() {
-        List<byte[]> bytesList = attributeList.stream().map(Attribute::serialize).toList();
+        List<byte[]> bytesList = this.attributeList.stream().map(Attribute::serialize).toList();
         int totalSize = bytesList.stream().mapToInt(bytes -> bytes.length).sum();
 
         ByteBuffer byteBuffer = ByteBuffer.allocate(totalSize);
@@ -22,7 +31,7 @@ public class PageTuple {
         return byteBuffer.array();
     }
 
-    public static PageTuple deserialize(byte[] bytes, PageColumnMetadataArray columnMetadataArray) {
+    public static PageTuple deserialize(byte[] bytes, PageColumnMetadataArray columnMetadataArray, RecordIdentifier recordId) {
         List<Attribute<?>> attributeList = new ArrayList<>(columnMetadataArray.metadataArray.length);
 
         int currentIndex = 0;
@@ -47,7 +56,7 @@ public class PageTuple {
             currentIndex = toIndex;
         }
 
-        return new PageTuple(attributeList);
+        return new PageTuple(recordId, attributeList);
     }
 
     public int getSerializedLength() {
