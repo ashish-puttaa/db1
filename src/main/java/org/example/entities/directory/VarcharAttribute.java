@@ -6,11 +6,11 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
 public class VarcharAttribute implements Attribute<String> {
-    public short length;
+    public short size;
     public String value;
 
     public VarcharAttribute(short length, String value) {
-        this.length = length;
+        this.size = length;
         this.value = value;
     }
 
@@ -34,7 +34,7 @@ public class VarcharAttribute implements Attribute<String> {
         byte[] valueBytes = ByteUtil.convertToByteArray(this.value);
 
         ByteBuffer byteBuffer = ByteBuffer.allocate(Short.BYTES + valueBytes.length);
-        byteBuffer.putShort(this.length);
+        byteBuffer.putShort(this.size);
         byteBuffer.put(valueBytes);
 
         return byteBuffer.array();
@@ -53,5 +53,13 @@ public class VarcharAttribute implements Attribute<String> {
         String value = new String(valueBytes, StandardCharsets.UTF_8).trim();
 
         return new VarcharAttribute(length, value);
+    }
+
+    public static short getSerializedSizeLength() {
+        return Short.BYTES;
+    }
+
+    public static short getSize(byte[] bytes) {
+        return ByteBuffer.wrap(bytes).getShort();
     }
 }

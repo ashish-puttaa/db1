@@ -32,8 +32,9 @@ public class Tuple {
             int toIndex = currentIndex;
 
             if(attributeType.equals(AttributeType.VARCHAR)) {
-                short length = ByteBuffer.wrap(Arrays.copyOfRange(bytes, currentIndex, currentIndex + Short.BYTES)).getShort();
-                toIndex += Short.BYTES + length;
+                byte[] sizeBytes = Arrays.copyOfRange(bytes, currentIndex, currentIndex + VarcharAttribute.getSerializedSizeLength());
+                short size = VarcharAttribute.getSize(sizeBytes);
+                toIndex += VarcharAttribute.getSerializedSizeLength() + size;
             }
             else {
                 toIndex += attributeType.size;
