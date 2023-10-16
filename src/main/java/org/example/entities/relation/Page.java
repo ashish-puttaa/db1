@@ -5,6 +5,7 @@ import org.example.iterators.PageTupleIterator;
 import org.example.util.ByteUtil;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -101,8 +102,19 @@ public class Page {
         return this.constructTupleRecordIdentifier(slotIndex);
     }
 
+    public void removeTuple(PageSlot slotEntry) {
+        byte[] tupleBytes = new byte[slotEntry.tupleLength];
+        Arrays.fill(tupleBytes, (byte) 0);
+
+        int tupleBytesOffset = slotEntry.pageOffset - this.slotArray.getTupleOffsetStart();
+        System.arraycopy(tupleBytes, 0, this.serializedTuples, tupleBytesOffset, tupleBytes.length);
+
+        this.slotArray.emptySlot(slotEntry.slotIndex);
+    }
+
     public void removeTuple(int slotIndex) {
-        this.slotArray.emptySlot(slotIndex);
+        PageSlot slot = this.slotArray.getSlot(slotIndex);
+        this.removeTuple(slot);
     }
 
     public PageTuple readTuple(PageSlot slotEntry) {
