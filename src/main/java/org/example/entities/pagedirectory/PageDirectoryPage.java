@@ -1,5 +1,6 @@
 package org.example.entities.pagedirectory;
 
+import org.example.Constants;
 import org.example.util.ByteUtil;
 
 import java.nio.ByteBuffer;
@@ -17,7 +18,7 @@ public class PageDirectoryPage {
     }
 
     public byte[] serialize() {
-        ByteBuffer byteBuffer = ByteBuffer.allocate(this.getSerializedLength());
+        ByteBuffer byteBuffer = ByteBuffer.allocate(Constants.PAGE_SIZE);
         byteBuffer.putInt(this.pageIdMap.size());
 
         for(Map.Entry<Integer, PageDirectoryRecord> entry: this.pageIdMap.entrySet()) {

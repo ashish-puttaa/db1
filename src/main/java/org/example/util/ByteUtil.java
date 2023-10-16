@@ -1,7 +1,10 @@
 package org.example.util;
 
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.Arrays;
 
 public class ByteUtil {
@@ -44,5 +47,15 @@ public class ByteUtil {
 
         System.arraycopy(bytes, lengthToShrink, shrunkTupleBytes, 0, shrunkLength);
         return shrunkTupleBytes;
+    }
+
+    public static byte[] readNBytes(Path filePath, int n, int startOffset) throws IOException {
+        try (RandomAccessFile randomAccessFile = new RandomAccessFile(filePath.toFile(), "r")) {
+            byte[] bytes = new byte[n];
+            randomAccessFile.seek(startOffset);
+            randomAccessFile.readFully(bytes);
+
+            return bytes;
+        }
     }
 }
