@@ -1,13 +1,13 @@
 package org.example.util;
 
 import com.github.javafaker.Faker;
-import org.example.entities.directory.Attribute;
-import org.example.entities.directory.AttributeType;
-import org.example.entities.directory.CharAttribute;
-import org.example.entities.directory.IntegerAttribute;
-import org.example.entities.directory.Page;
-import org.example.entities.directory.PageTuple;
-import org.example.entities.directory.VarcharAttribute;
+import org.example.entities.relation.Attribute;
+import org.example.entities.relation.AttributeType;
+import org.example.entities.relation.CharAttribute;
+import org.example.entities.relation.IntegerAttribute;
+import org.example.entities.relation.Page;
+import org.example.entities.relation.PageTuple;
+import org.example.entities.relation.VarcharAttribute;
 
 import java.util.ArrayList;
 import java.util.Arrays;

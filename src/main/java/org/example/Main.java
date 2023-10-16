@@ -1,8 +1,8 @@
 package org.example;
 
-import org.example.entities.directory.Page;
-import org.example.entities.directory.PageTuple;
-import org.example.entities.directory.Relation;
+import org.example.entities.relation.Page;
+import org.example.entities.relation.PageTuple;
+import org.example.entities.relation.Relation;
 import org.example.util.MockPageFactory;
 
 import java.nio.file.Files;

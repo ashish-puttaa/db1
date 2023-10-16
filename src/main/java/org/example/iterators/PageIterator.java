@@ -1,6 +1,6 @@
 package org.example.iterators;
 
-import org.example.entities.directory.Page;
+import org.example.entities.relation.Page;
 
 import java.io.IOException;
 import java.nio.file.Path;

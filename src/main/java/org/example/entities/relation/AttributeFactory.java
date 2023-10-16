@@ -1,4 +1,4 @@
-package org.example.entities.directory;
+package org.example.entities.relation;
 
 public class AttributeFactory {
     public static Attribute<?> createFromBytes(byte[] bytes, AttributeType type) {

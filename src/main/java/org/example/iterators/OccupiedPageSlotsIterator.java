@@ -1,6 +1,6 @@
 package org.example.iterators;
 
-import org.example.entities.directory.PageSlot;
+import org.example.entities.relation.PageSlot;
 
 import java.util.Iterator;
 import java.util.List;

@@ -1,8 +1,8 @@
 package org.example.iterators;
 
-import org.example.entities.directory.Page;
-import org.example.entities.directory.PageSlot;
-import org.example.entities.directory.PageTuple;
+import org.example.entities.relation.Page;
+import org.example.entities.relation.PageSlot;
+import org.example.entities.relation.PageTuple;
 
 import java.util.Iterator;
 

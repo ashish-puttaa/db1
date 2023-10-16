@@ -1,4 +1,4 @@
-package org.example.entities.directory;
+package org.example.entities.relation;
 
 import org.example.Constants;
 import org.example.iterators.PageTupleIterator;

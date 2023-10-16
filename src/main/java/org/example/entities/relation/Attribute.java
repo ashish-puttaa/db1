@@ -1,4 +1,4 @@
-package org.example.entities.directory;
+package org.example.entities.relation;
 
 public interface Attribute<T> {
     T getValue();

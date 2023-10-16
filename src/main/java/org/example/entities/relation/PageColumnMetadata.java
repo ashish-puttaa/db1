@@ -1,4 +1,4 @@
-package org.example.entities.directory;
+package org.example.entities.relation;
 
 public class PageColumnMetadata {
     public byte columnNumber;

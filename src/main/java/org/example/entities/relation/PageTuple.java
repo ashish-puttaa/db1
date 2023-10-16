@@ -1,4 +1,4 @@
-package org.example.entities.directory;
+package org.example.entities.relation;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
