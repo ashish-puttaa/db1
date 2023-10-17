@@ -1,6 +1,8 @@
 package org.example.util;
 
 import com.github.javafaker.Faker;
+import org.example.entities.pagedirectory.PageDirectory;
+import org.example.entities.pagedirectory.PageDirectoryRecord;
 import org.example.entities.relation.Attribute;
 import org.example.entities.relation.AttributeType;
 import org.example.entities.relation.CharAttribute;
@@ -15,7 +17,7 @@ import java.util.List;
 import java.util.Random;
 
 public class MockPageFactory {
-    public static Page generatePage(int pageId) {
+    public static Page generatePage(int pageId, int databaseFileId, int pageNumber) {
         List<AttributeType> attributeTypes = Arrays.asList(AttributeType.VARCHAR, AttributeType.INTEGER, AttributeType.VARCHAR);
         Page page = new Page(pageId, attributeTypes);
 
@@ -34,6 +36,8 @@ public class MockPageFactory {
         }
         catch (Page.PageFullException ignored) {}
 
+        PageDirectoryRecord pageDirectoryRecord = new PageDirectoryRecord(databaseFileId, pageNumber);
+        PageDirectory.getInstance().addMapping(pageId, pageDirectoryRecord);
         return page;
     }
 

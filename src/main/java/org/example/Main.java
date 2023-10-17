@@ -8,6 +8,7 @@ import org.example.util.MockPageFactory;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -19,10 +20,14 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
+        SecureRandom secureRandom = new SecureRandom();
+        int directoryFileId = secureRandom.nextInt(Integer.MAX_VALUE);
         Files.write(RELATION_FILE_PATH, new byte[0], StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 
         for(int i=0; i<10; i++) {
-            Page page = MockPageFactory.generatePage(i+1);
+            int pageId = secureRandom.nextInt(Integer.MAX_VALUE);
+            int pageNumber = i + 1; // starts at 1
+            Page page = MockPageFactory.generatePage(pageId, directoryFileId, pageNumber);
             Files.write(RELATION_FILE_PATH, page.serialize(), StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.APPEND);
         }
 
@@ -55,5 +60,7 @@ public class Main {
 
             System.out.println("\n---------------------------------------------------------");
         }
+
+        System.out.println("Exiting...");
     }
 }
