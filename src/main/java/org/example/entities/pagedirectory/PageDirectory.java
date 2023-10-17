@@ -5,6 +5,7 @@ import org.example.util.ByteUtil;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 
@@ -24,8 +25,17 @@ public class PageDirectory {
         this.buffer = new PageDirectoryPageBuffer(bufferCapacity, this);
 
         try {
-            byte[] headerBytes = ByteUtil.readNBytes(this.filePath, PageDirectoryHeader.getSerializedLength(), 0);
-            this.header = PageDirectoryHeader.deserialize(headerBytes);
+            long fileSize = Files.size(this.filePath);
+
+            if(fileSize > PageDirectoryHeader.getSerializedLength()) {
+                byte[] headerBytes = ByteUtil.readNBytes(this.filePath, PageDirectoryHeader.getSerializedLength(), 0);
+                this.header = PageDirectoryHeader.deserialize(headerBytes);
+            }
+            else {
+                this.header = new PageDirectoryHeader();
+                byte[] headerBytes = this.header.serialize();
+                ByteUtil.writeNBytes(this.filePath, PageDirectoryHeader.getSerializedLength(), 0, headerBytes);
+            }
         }
         catch (IOException e) {
             throw new RuntimeException(e);

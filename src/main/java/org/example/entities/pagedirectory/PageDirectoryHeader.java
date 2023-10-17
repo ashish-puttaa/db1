@@ -5,6 +5,10 @@ import java.nio.ByteBuffer;
 public class PageDirectoryHeader {
     private int pageCount;
 
+    public PageDirectoryHeader() {
+        this.pageCount = 0;
+    }
+
     private PageDirectoryHeader(int pageCount) {
         this.pageCount = pageCount;
     }

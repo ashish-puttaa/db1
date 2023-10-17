@@ -58,4 +58,11 @@ public class ByteUtil {
             return bytes;
         }
     }
+
+    public static void writeNBytes(Path filePath, int n, int startOffset, byte[] data) throws IOException {
+        try (RandomAccessFile randomAccessFile = new RandomAccessFile(filePath.toFile(), "rw")) {
+            randomAccessFile.seek(startOffset);
+            randomAccessFile.write(data, 0, n);
+        }
+    }
 }
