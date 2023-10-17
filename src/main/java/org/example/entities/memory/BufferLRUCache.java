@@ -6,7 +6,7 @@ import java.util.Optional;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 class BufferLRUCache<K, V> {
-    private final LinkedHashMap<K, V> cache;
+    public final LinkedHashMap<K, V> cache;
     private final int capacity;
     private final EvictionHandler<K, V> evictionHandler;
     private final ReentrantReadWriteLock lock;

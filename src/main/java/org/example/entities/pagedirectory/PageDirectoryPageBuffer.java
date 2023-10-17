@@ -18,5 +18,15 @@ public class PageDirectoryPageBuffer extends BufferPool<Integer, PageDirectoryPa
                 return Optional.empty();
             }
         );
+
+        ScheduleHandler<Integer, PageDirectoryPage> scheduleHandler = (entrySet) -> {
+            entrySet.forEach(entry -> {
+                PageDirectoryPage page = entry.getValue();
+                pageDirectory.handleBufferEviction(entry.getKey(), page);
+                page.markAsClean();
+            });
+        };
+
+        this.startScheduler(scheduleHandler);
     }
 }

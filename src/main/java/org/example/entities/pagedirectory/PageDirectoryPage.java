@@ -76,4 +76,8 @@ public class PageDirectoryPage {
     public boolean isDirty() {
         return this.dirty;
     }
+
+    public void markAsClean() {
+        this.dirty = false;
+    }
 }

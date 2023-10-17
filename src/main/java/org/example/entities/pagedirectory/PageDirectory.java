@@ -89,6 +89,10 @@ public class PageDirectory {
         }
     }
 
+    public void stopScheduler() {
+        this.buffer.stopScheduler();
+    }
+
     public PageDirectoryPage readNthPage(int n) throws IOException {
         int pageOffsetInRelation = this.pageSize * n;
         byte[] pageBytes = ByteUtil.readNBytes(this.filePath, this.pageSize, pageOffsetInRelation);
