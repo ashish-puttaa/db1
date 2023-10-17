@@ -6,19 +6,14 @@ import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BiConsumer;
 
 //TODO: Dirty pages are not written back to disk immediately. They will be buffered. (Will add that into the Page)
-public class BufferPool<K, V> {
+public abstract class BufferPool<K, V> {
     private final BufferLRUCache<K, V> buffer;
-
-    private final PageSupplier<K, V> pageSupplier;
     private volatile ScheduledExecutorService executorService;
-    private ScheduleHandler<K, V> scheduleHandler;
 
-    public BufferPool(int capacity, BiConsumer<K, V> evictionHandler, PageSupplier<K, V> pageSupplier) {
-        this.buffer = new BufferLRUCache<>(capacity, evictionHandler);
-        this.pageSupplier = pageSupplier;
+    public BufferPool(int capacity) {
+        this.buffer = new BufferLRUCache<>(capacity, this::handleBufferEviction);
     }
 
     public Optional<V> getPage(K pageIdentifier) {
@@ -27,7 +22,7 @@ public class BufferPool<K, V> {
             return page;
         }
 
-        Optional<V> newPage = this.pageSupplier.get(pageIdentifier);
+        Optional<V> newPage = this.readPage(pageIdentifier);
         if(newPage.isPresent()) {
             this.buffer.put(pageIdentifier, newPage.get());
             return newPage;
@@ -40,11 +35,10 @@ public class BufferPool<K, V> {
         this.buffer.put(pageIdentifier, page);
     }
 
-    public void startScheduler(ScheduleHandler<K, V> scheduleHandler) {
-        this.scheduleHandler = scheduleHandler;
+    public void startScheduler() {
         this.executorService = Executors.newSingleThreadScheduledExecutor();
 
-        Runnable runnable = () -> this.scheduleHandler.processBuffer(this.buffer.cache.entrySet());
+        Runnable runnable = () -> this.handleBufferSchedule(this.buffer.cache.entrySet());
 
         TimeUnit timeUnit = TimeUnit.MILLISECONDS;
         long intervalDelay = timeUnit.toMillis(100);
@@ -60,11 +54,7 @@ public class BufferPool<K, V> {
         }
     }
 
-    public interface PageSupplier<K, V> {
-        Optional<V> get(K pageIdentifier);
-    }
-
-    public interface ScheduleHandler<K, V> {
-        void processBuffer(Set<Map.Entry<K, V>> entrySet);
-    }
+    protected abstract Optional<V> readPage(K pageIdentifier);
+    protected abstract void handleBufferEviction(K key, V value);
+    protected abstract void handleBufferSchedule(Set<Map.Entry<K, V>> entrySet);
 }
