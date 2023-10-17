@@ -45,6 +45,7 @@ public class PageDirectoryPage {
             pageDirectoryPage.addMapping(pageId, pageDirectoryRecord);
         }
 
+        pageDirectoryPage.markAsClean();
         return pageDirectoryPage;
     }
 
