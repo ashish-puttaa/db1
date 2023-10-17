@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiConsumer;
 
 //TODO: Dirty pages are not written back to disk immediately. They will be buffered. (Will add that into the Page)
 public class BufferPool<K, V> {
@@ -15,7 +16,7 @@ public class BufferPool<K, V> {
     private volatile ScheduledExecutorService executorService;
     private ScheduleHandler<K, V> scheduleHandler;
 
-    public BufferPool(int capacity, BufferLRUCache.EvictionHandler<K, V> evictionHandler, PageSupplier<K, V> pageSupplier) {
+    public BufferPool(int capacity, BiConsumer<K, V> evictionHandler, PageSupplier<K, V> pageSupplier) {
         this.buffer = new BufferLRUCache<>(capacity, evictionHandler);
         this.pageSupplier = pageSupplier;
     }
