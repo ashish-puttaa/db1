@@ -1,7 +1,7 @@
 package org.example.util;
 
 import com.github.javafaker.Faker;
-import org.example.entities.pagedirectory.PageDirectory;
+import org.example.entities.pagedirectory.PageDirectoryManager;
 import org.example.entities.pagedirectory.PageDirectoryRecord;
 import org.example.entities.relation.Attribute;
 import org.example.entities.relation.AttributeType;
@@ -37,7 +37,7 @@ public class MockPageFactory {
         catch (Page.PageFullException ignored) {}
 
         PageDirectoryRecord pageDirectoryRecord = new PageDirectoryRecord(databaseFileId, pageNumber);
-        PageDirectory.getInstance().addMapping(pageId, pageDirectoryRecord);
+        PageDirectoryManager.getInstance().addMapping(pageId, pageDirectoryRecord);
         return page;
     }
 

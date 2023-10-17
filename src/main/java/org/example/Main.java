@@ -1,6 +1,6 @@
 package org.example;
 
-import org.example.entities.pagedirectory.PageDirectory;
+import org.example.entities.pagedirectory.PageDirectoryManager;
 import org.example.entities.relation.Page;
 import org.example.entities.relation.PageTuple;
 import org.example.entities.relation.Relation;
@@ -65,6 +65,6 @@ public class Main {
 
         System.out.println("Exiting...");
 
-        PageDirectory.getInstance().stopScheduler();
+        PageDirectoryManager.getInstance().stopScheduler();
     }
 }

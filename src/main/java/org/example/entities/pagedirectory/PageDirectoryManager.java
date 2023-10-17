@@ -11,8 +11,8 @@ import java.util.Optional;
 
 //TODO: Keeps track of all page ids and what database file they are in and their offset/page_numbers
 // Must be persisted
-public class PageDirectory {
-    private static final class InstanceHolder { public static final PageDirectory instance = new PageDirectory(); }
+public class PageDirectoryManager {
+    private static final class InstanceHolder { public static final PageDirectoryManager instance = new PageDirectoryManager(); }
 
     private final Path filePath = Constants.PAGE_DIRECTORY_FILE_PATH;
     private final int pageSize = Constants.PAGE_SIZE;
@@ -20,7 +20,7 @@ public class PageDirectory {
 
     private final PageDirectoryHeader header;
 
-    private PageDirectory() {
+    private PageDirectoryManager() {
         int bufferCapacity = Constants.PAGE_DIRECTORY_BUFFER_POOL_SIZE / this.pageSize;
         this.buffer = new PageDirectoryPageBuffer(bufferCapacity, this);
 
@@ -42,7 +42,7 @@ public class PageDirectory {
         }
     }
 
-    public static PageDirectory getInstance() {
+    public static PageDirectoryManager getInstance() {
         return InstanceHolder.instance;
     }
 

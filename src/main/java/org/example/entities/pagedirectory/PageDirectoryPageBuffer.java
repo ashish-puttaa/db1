@@ -6,13 +6,13 @@ import java.io.IOException;
 import java.util.Optional;
 
 public class PageDirectoryPageBuffer extends BufferPool<Integer, PageDirectoryPage> {
-    public PageDirectoryPageBuffer(int capacity, PageDirectory pageDirectory) {
+    public PageDirectoryPageBuffer(int capacity, PageDirectoryManager pageDirectoryManager) {
         super(
             capacity,
-            pageDirectory::handleBufferEviction,
+            pageDirectoryManager::handleBufferEviction,
             pageNumber -> {
                 try {
-                    return Optional.of(pageDirectory.readNthPage(pageNumber));
+                    return Optional.of(pageDirectoryManager.readNthPage(pageNumber));
                 }
                 catch (IOException ignored) {}
                 return Optional.empty();
@@ -22,7 +22,7 @@ public class PageDirectoryPageBuffer extends BufferPool<Integer, PageDirectoryPa
         ScheduleHandler<Integer, PageDirectoryPage> scheduleHandler = (entrySet) -> {
             entrySet.forEach(entry -> {
                 PageDirectoryPage page = entry.getValue();
-                pageDirectory.handleBufferEviction(entry.getKey(), page);
+                pageDirectoryManager.handleBufferEviction(entry.getKey(), page);
                 page.markAsClean();
             });
         };
