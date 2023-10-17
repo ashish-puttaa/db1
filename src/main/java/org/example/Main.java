@@ -34,6 +34,8 @@ public class Main {
         Relation relation = new Relation(Constants.RELATION_FILE_PATH, Constants.PAGE_SIZE);
         Iterator<Page> pageIterator = relation.getPageIterator();
 
+        int pageNumber = 0;
+
         while(pageIterator.hasNext()) {
             Page page = pageIterator.next();
 
@@ -43,7 +45,7 @@ public class Main {
                 tuplesList.add(tuplesIterator.next());
             }
 
-            System.out.printf("\nPAGE %d:\n", page.header.pageIdentifier);
+            System.out.printf("\nPAGE %d: (%d)\n", ++pageNumber, page.header.pageIdentifier);
 
             System.out.println("\nHEADER:");
             String headerString = Arrays.stream(page.columnMetadataArray.metadataArray).map(column -> column.columnNumber + "-" + column.attributeType).collect(Collectors.joining(", "));
