@@ -22,6 +22,7 @@ public class Main {
         SecureRandom secureRandom = new SecureRandom();
         int directoryFileId = secureRandom.nextInt(Integer.MAX_VALUE);
         Files.write(Constants.RELATION_FILE_PATH, new byte[0], StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+        Files.write(Constants.PAGE_DIRECTORY_FILE_PATH, new byte[0], StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 
         for(int i=0; i<10; i++) {
             int pageId = secureRandom.nextInt(Integer.MAX_VALUE);
