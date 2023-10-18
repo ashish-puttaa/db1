@@ -37,7 +37,7 @@ public class MockPageFactory {
         catch (Page.PageFullException ignored) {}
 
         PageDirectoryRecord pageDirectoryRecord = new PageDirectoryRecord(databaseFileId, pageNumber);
-        PageDirectoryManager.getInstance().addMapping(pageId, pageDirectoryRecord);
+        PageDirectoryManager.getInstance().addRecord(pageId, pageDirectoryRecord);
         return page;
     }
 

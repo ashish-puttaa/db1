@@ -1,12 +1,8 @@
 package org.example.entities.pagedirectory;
 
 import org.example.Constants;
-import org.example.util.ByteUtil;
 
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Optional;
 
 //TODO: Keeps track of all page ids and what database file they are in and their offset/page_numbers
@@ -14,64 +10,52 @@ import java.util.Optional;
 public class PageDirectoryManager {
     private static final class InstanceHolder { public static final PageDirectoryManager instance = new PageDirectoryManager(); }
 
-    private final Path filePath = Constants.PAGE_DIRECTORY_FILE_PATH;
-    private final int pageSize = Constants.PAGE_SIZE;
     private final PageDirectoryPageBuffer buffer;
+    private final PageDirectory pageDirectory;
 
-    private final PageDirectoryHeader header;
 
     private PageDirectoryManager() {
-        int bufferCapacity = Constants.PAGE_DIRECTORY_BUFFER_POOL_SIZE / this.pageSize;
-        this.buffer = new PageDirectoryPageBuffer(bufferCapacity, this);
+        this.pageDirectory = new PageDirectory(Constants.PAGE_DIRECTORY_FILE_PATH, Constants.PAGE_SIZE);
 
-        try {
-            long fileSize = Files.size(this.filePath);
-
-            if(fileSize > PageDirectoryHeader.getSerializedLength()) {
-                byte[] headerBytes = ByteUtil.readNBytes(this.filePath, PageDirectoryHeader.getSerializedLength(), 0);
-                this.header = PageDirectoryHeader.deserialize(headerBytes);
-            }
-            else {
-                this.header = new PageDirectoryHeader();
-                byte[] headerBytes = this.header.serialize();
-                ByteUtil.writeNBytes(this.filePath, PageDirectoryHeader.getSerializedLength(), 0, headerBytes);
-            }
-        }
-        catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        int bufferCapacity = Constants.PAGE_DIRECTORY_BUFFER_POOL_SIZE / Constants.PAGE_SIZE;
+        this.buffer = new PageDirectoryPageBuffer(bufferCapacity, this, this.pageDirectory::readNthPage);
     }
 
     public static PageDirectoryManager getInstance() {
         return InstanceHolder.instance;
     }
 
-    public void addMapping(int pageId, PageDirectoryRecord pageDirectoryRecord) {
-        for(int i=0; i<this.header.getPageCount(); i++) {
+    private boolean canAddRecordToPage(PageDirectoryPage page, PageDirectoryRecord record) {
+        int pageLength = page.getSerializedLength();
+        int recordLength = PageDirectoryRecord.getSerializedLength();
+
+        return pageLength + recordLength < Constants.PAGE_SIZE;
+    }
+
+    public void addRecord(int pageId, PageDirectoryRecord record) {
+        for(int i=0; i<this.pageDirectory.getPageCount(); i++) {
             Optional<PageDirectoryPage> optionalPage = this.buffer.getPage(i);
 
-            if(optionalPage.isPresent()) {
-                PageDirectoryPage page = optionalPage.get();
-                int pageLength = page.getSerializedLength();
-
-                if(pageLength + PageDirectoryRecord.getSerializedLength() < this.pageSize) {
-                    page.addMapping(pageId, pageDirectoryRecord);
-                    return;
-                }
+            if(optionalPage.isPresent() && this.canAddRecordToPage(optionalPage.get(), record)) {
+                optionalPage.get().addMapping(pageId, record);
+                return;
             }
         }
 
-        this.header.incrementPageCount();
+        try {
+            PageDirectoryPage newPage = this.pageDirectory.addNewPage();
+            newPage.addMapping(pageId, record);
 
-        PageDirectoryPage newPage = new PageDirectoryPage();
-        newPage.addMapping(pageId, pageDirectoryRecord);
-
-        int pageIndex = this.header.getPageCount() - 1;
-        this.buffer.insertPage(pageIndex, newPage);
+            int pageIndex = this.pageDirectory.getPageCount() - 1;
+            this.buffer.insertPage(pageIndex, newPage);
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public Optional<PageDirectoryRecord> getMapping(int pageId) throws IOException {
-        for(int i=0; i<this.header.getPageCount(); i++) {
+    public Optional<PageDirectoryRecord> getRecord(int pageId) {
+        for(int i=0; i<this.pageDirectory.getPageCount(); i++) {
             Optional<PageDirectoryPage> optionalPage = this.buffer.getPage(i);
 
             if(optionalPage.isPresent()) {
@@ -91,31 +75,15 @@ public class PageDirectoryManager {
     {
         try {
             if(page.isDirty()) {
-                this.writeNthPage(pageNumber, page);
+                this.pageDirectory.writeNthPage(pageNumber, page);
             }
         }
-        catch (IOException exception) {
-            exception.printStackTrace();
+        catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
     public void stopScheduler() {
         this.buffer.stopScheduler();
-    }
-
-    public PageDirectoryPage readNthPage(int n) throws IOException {
-        int pageOffsetInRelation = this.pageSize * n;
-        byte[] pageBytes = ByteUtil.readNBytes(this.filePath, this.pageSize, pageOffsetInRelation);
-        return PageDirectoryPage.deserialize(pageBytes);
-    }
-
-    public void writeNthPage(int n, PageDirectoryPage page) throws IOException {
-        try (RandomAccessFile randomAccessFile = new RandomAccessFile(this.filePath.toFile(), "rw")) {
-            byte[] pageBytes = page.serialize();
-
-            int pageOffsetInRelation = this.pageSize * n;
-            randomAccessFile.seek(pageOffsetInRelation);
-            randomAccessFile.write(pageBytes);
-        }
     }
 }

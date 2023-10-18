@@ -9,17 +9,19 @@ import java.util.Set;
 
 public class PageDirectoryPageBuffer extends BufferPool<Integer, PageDirectoryPage> {
     private final PageDirectoryManager pageDirectoryManager;
+    private final ReadPageHandler readPageHandler;
 
-    public PageDirectoryPageBuffer(int capacity, PageDirectoryManager pageDirectoryManager) {
+    public PageDirectoryPageBuffer(int capacity, PageDirectoryManager pageDirectoryManager, ReadPageHandler readPageHandler) {
         super(capacity);
         this.pageDirectoryManager = pageDirectoryManager;
+        this.readPageHandler = readPageHandler;
         this.startScheduler();
     }
 
     @Override
     protected Optional<PageDirectoryPage> readPage(Integer pageIdentifier) {
         try {
-            return Optional.of(this.pageDirectoryManager.readNthPage(pageIdentifier));
+            return Optional.of(this.readPageHandler.read(pageIdentifier));
         }
         catch (IOException ignored) {}
         return Optional.empty();
@@ -39,5 +41,9 @@ public class PageDirectoryPageBuffer extends BufferPool<Integer, PageDirectoryPa
             this.pageDirectoryManager.handleBufferEviction(pageNumber, page);
             page.markAsClean();
         });
+    }
+
+    public interface ReadPageHandler {
+        PageDirectoryPage read(int pageNumber) throws IOException;
     }
 }
