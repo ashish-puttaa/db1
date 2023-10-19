@@ -10,4 +10,5 @@ public class Constants {
     public static final Path RELATION_FILE_PATH = Path.of("relation-file-1");
     public static final Path PAGE_DIRECTORY_FILE_PATH = FileSystems.getDefault().getPath("page-directory-file-1");
     public static final int PAGE_DIRECTORY_BUFFER_POOL_SIZE = PAGE_SIZE * 5;
+    public static final int PAGE_BUFFER_POOL_SIZE = PAGE_SIZE * 5;
 }

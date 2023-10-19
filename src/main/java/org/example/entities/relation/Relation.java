@@ -1,9 +1,9 @@
 package org.example.entities.relation;
 
 import org.example.iterators.PageIterator;
+import org.example.util.ByteUtil;
 
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.logging.Logger;
@@ -26,14 +26,13 @@ public class Relation {
     }
 
     public Page readNthPage(int n) throws IOException {
-        try(RandomAccessFile randomAccessFile = new RandomAccessFile(this.path.toFile(), "r")) {
-            byte[] pageBytes = new byte[this.pageSize];
-
-            int pageOffsetInRelation = this.pageSize * (n - 1);
-            randomAccessFile.seek(pageOffsetInRelation);
-            randomAccessFile.readFully(pageBytes);
-
-            return Page.deserialize(pageBytes);
-        }
+        int pageOffsetInRelation = this.pageSize * n;
+        byte[] pageBytes = ByteUtil.readNBytes(this.path, this.pageSize, pageOffsetInRelation);
+        return Page.deserialize(pageBytes);
+    }
+    public void writeNthPage(int n, Page page) throws IOException {
+        int pageOffsetInRelation = this.pageSize * n;
+        byte[] pageBytes = page.serialize();
+        ByteUtil.writeNBytes(this.path, this.pageSize, pageOffsetInRelation, pageBytes);
     }
 }
