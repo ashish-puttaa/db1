@@ -8,14 +8,14 @@ public class PageManager {
     private static final class InstanceHolder { public static final PageManager instance = new PageManager(); }
     public static PageManager getInstance() { return PageManager.InstanceHolder.instance; }
 
-    private final PageBufferPool buffer;
+    private final PageBufferPool bufferPool;
 
     public PageManager() {
         int bufferCapacity = Constants.PAGE_BUFFER_POOL_SIZE / Constants.PAGE_SIZE;
-        this.buffer = new PageBufferPool(bufferCapacity);
+        this.bufferPool = new PageBufferPool(bufferCapacity);
     }
 
     public Optional<Page> getPage(int pageIdentifier) {
-        return this.buffer.get(pageIdentifier);
+        return this.bufferPool.get(pageIdentifier);
     }
 }

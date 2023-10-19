@@ -14,15 +14,15 @@ public class PageDirectoryManager {
     private static final class InstanceHolder { public static final PageDirectoryManager instance = new PageDirectoryManager(); }
     public static PageDirectoryManager getInstance() { return InstanceHolder.instance; }
 
-    private final BufferPool<Integer, PageDirectoryPage> buffer;
+    private final BufferPool<Integer, PageDirectoryPage> bufferPool;
     private final PageDirectory pageDirectory;
 
     private PageDirectoryManager() {
         this.pageDirectory = new PageDirectory(Constants.PAGE_DIRECTORY_FILE_PATH, Constants.PAGE_SIZE);
 
         int bufferCapacity = Constants.PAGE_DIRECTORY_BUFFER_POOL_SIZE / Constants.PAGE_SIZE;
-        this.buffer = this.createBufferPool(bufferCapacity);
-        this.buffer.startScheduler();
+        this.bufferPool = this.createBufferPool(bufferCapacity);
+        this.bufferPool.startScheduler();
     }
 
     private boolean canAddRecordToPage(PageDirectoryPage page, PageDirectoryRecord record) {
@@ -34,7 +34,7 @@ public class PageDirectoryManager {
 
     public void addRecord(int pageId, PageDirectoryRecord record) {
         for(int i=0; i<this.pageDirectory.getPageCount(); i++) {
-            Optional<PageDirectoryPage> optionalPage = this.buffer.get(i);
+            Optional<PageDirectoryPage> optionalPage = this.bufferPool.get(i);
 
             if(optionalPage.isPresent() && this.canAddRecordToPage(optionalPage.get(), record)) {
                 optionalPage.get().addMapping(pageId, record);
@@ -47,7 +47,7 @@ public class PageDirectoryManager {
             newPage.addMapping(pageId, record);
 
             int pageIndex = this.pageDirectory.getPageCount() - 1;
-            this.buffer.put(pageIndex, newPage);
+            this.bufferPool.put(pageIndex, newPage);
         }
         catch (IOException e) {
             throw new RuntimeException(e);
@@ -56,7 +56,7 @@ public class PageDirectoryManager {
 
     public Optional<PageDirectoryRecord> getRecord(int pageId) {
         for(int i=0; i<this.pageDirectory.getPageCount(); i++) {
-            Optional<PageDirectoryPage> optionalPage = this.buffer.get(i);
+            Optional<PageDirectoryPage> optionalPage = this.bufferPool.get(i);
 
             if(optionalPage.isPresent()) {
                 PageDirectoryPage page = optionalPage.get();
@@ -85,7 +85,7 @@ public class PageDirectoryManager {
     }
 
     public void stopScheduler() {
-        this.buffer.stopScheduler();
+        this.bufferPool.stopScheduler();
     }
 
     private BufferPool<Integer, PageDirectoryPage> createBufferPool(int capacity) {
