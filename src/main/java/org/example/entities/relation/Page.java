@@ -1,6 +1,7 @@
 package org.example.entities.relation;
 
 import org.example.Constants;
+import org.example.entities.common.Dirtyable;
 import org.example.iterators.PageTupleIterator;
 import org.example.util.ByteUtil;
 
@@ -15,7 +16,7 @@ import java.util.List;
 // TODO: Move tuples will fill empty spaces after deletion during compaction
 // Done: Not here, but every tuple will have a record id somewhere which will contain the page id and the slot array index. Its called ctid in postgres (6 bytes).
 // TODO: Add a overflow page for very large tuple values
-public class Page {
+public class Page extends Dirtyable {
     public PageHeader header;
     public PageColumnMetadataArray columnMetadataArray;
     public PageSlotArray slotArray;
@@ -99,6 +100,7 @@ public class Page {
         int tupleOffset = offset - this.slotArray.getTupleOffsetStart();
         System.arraycopy(tupleBytes, 0, this.serializedTuples, tupleOffset, desiredLength);
 
+        this.markAsDirty();
         return this.constructTupleRecordIdentifier(slotIndex);
     }
 
@@ -110,6 +112,7 @@ public class Page {
         System.arraycopy(tupleBytes, 0, this.serializedTuples, tupleBytesOffset, tupleBytes.length);
 
         this.slotArray.emptySlot(slotEntry.slotIndex);
+        this.markAsDirty();
     }
 
     public void removeTuple(int slotIndex) {
