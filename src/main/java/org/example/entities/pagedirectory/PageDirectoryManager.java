@@ -34,7 +34,7 @@ public class PageDirectoryManager {
 
     public void addRecord(int pageId, PageDirectoryRecord record) {
         for(int i=0; i<this.pageDirectory.getPageCount(); i++) {
-            Optional<PageDirectoryPage> optionalPage = this.buffer.getPage(i);
+            Optional<PageDirectoryPage> optionalPage = this.buffer.get(i);
 
             if(optionalPage.isPresent() && this.canAddRecordToPage(optionalPage.get(), record)) {
                 optionalPage.get().addMapping(pageId, record);
@@ -47,7 +47,7 @@ public class PageDirectoryManager {
             newPage.addMapping(pageId, record);
 
             int pageIndex = this.pageDirectory.getPageCount() - 1;
-            this.buffer.insertPage(pageIndex, newPage);
+            this.buffer.put(pageIndex, newPage);
         }
         catch (IOException e) {
             throw new RuntimeException(e);
@@ -56,7 +56,7 @@ public class PageDirectoryManager {
 
     public Optional<PageDirectoryRecord> getRecord(int pageId) {
         for(int i=0; i<this.pageDirectory.getPageCount(); i++) {
-            Optional<PageDirectoryPage> optionalPage = this.buffer.getPage(i);
+            Optional<PageDirectoryPage> optionalPage = this.buffer.get(i);
 
             if(optionalPage.isPresent()) {
                 PageDirectoryPage page = optionalPage.get();
@@ -90,7 +90,7 @@ public class PageDirectoryManager {
     private BufferPool<Integer, PageDirectoryPage> createBufferPool(int capacity) {
         return new BufferPool<>(capacity) {
             @Override
-            protected Optional<PageDirectoryPage> readPage(Integer pageIdentifier) {
+            protected Optional<PageDirectoryPage> read(Integer pageIdentifier) {
                 try {
                     return Optional.of(PageDirectoryManager.this.pageDirectory.readNthPage(pageIdentifier));
                 }

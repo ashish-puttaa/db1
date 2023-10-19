@@ -16,23 +16,23 @@ public abstract class BufferPool<K, V> {
         this.buffer = new BufferLRUCache<>(capacity, this::handleBufferEviction);
     }
 
-    public Optional<V> getPage(K pageIdentifier) {
-        Optional<V> page = this.buffer.get(pageIdentifier);
-        if(page.isPresent()) {
-            return page;
+    public Optional<V> get(K key) {
+        Optional<V> value = this.buffer.get(key);
+        if(value.isPresent()) {
+            return value;
         }
 
-        Optional<V> newPage = this.readPage(pageIdentifier);
-        if(newPage.isPresent()) {
-            this.buffer.put(pageIdentifier, newPage.get());
-            return newPage;
+        Optional<V> newValue = this.read(key);
+        if(newValue.isPresent()) {
+            this.buffer.put(key, newValue.get());
+            return newValue;
         }
 
         return Optional.empty();
     }
 
-    public void insertPage(K pageIdentifier, V page) {
-        this.buffer.put(pageIdentifier, page);
+    public void put(K key, V value) {
+        this.buffer.put(key, value);
     }
 
     public void startScheduler() {
@@ -55,7 +55,7 @@ public abstract class BufferPool<K, V> {
         catch (InterruptedException ignored) {}
     }
 
-    protected abstract Optional<V> readPage(K pageIdentifier);
+    protected abstract Optional<V> read(K key);
     protected abstract void handleBufferEviction(K key, V value);
     protected abstract void handleBufferSchedule(Set<Map.Entry<K, V>> entrySet);
 }
