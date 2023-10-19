@@ -3,7 +3,6 @@ package org.example.entities.pagedirectory;
 import org.example.util.ByteUtil;
 
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -64,13 +63,9 @@ public class PageDirectory {
     }
 
     public void writeNthPage(int n, PageDirectoryPage page) throws IOException {
-        try (RandomAccessFile randomAccessFile = new RandomAccessFile(this.filePath.toFile(), "rw")) {
-            byte[] pageBytes = page.serialize();
-
-            int pageOffsetInRelation = this.pageSize * n;
-            randomAccessFile.seek(pageOffsetInRelation);
-            randomAccessFile.write(pageBytes);
-        }
+        int pageOffsetInRelation = this.pageSize * n;
+        byte[] pageBytes = page.serialize();
+        ByteUtil.writeNBytes(this.filePath, this.pageSize, pageOffsetInRelation, pageBytes);
     }
 
     private void writeHeader(PageDirectoryHeader header) throws IOException {
