@@ -63,8 +63,9 @@ public class Main {
             System.out.println("\n---------------------------------------------------------");
         }
 
-        System.out.println("Exiting...");
-
+        System.out.println("Stopping page directory manager's scheduler...");
         PageDirectoryManager.getInstance().stopScheduler();
+
+        System.out.println("Exiting...");
     }
 }

@@ -1,16 +1,19 @@
 package org.example.entities.pagedirectory;
 
 import org.example.Constants;
+import org.example.entities.memory.BufferPool;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 //TODO: Keeps track of all page ids and what database file they are in and their offset/page_numbers
 // Must be persisted
 public class PageDirectoryManager {
     private static final class InstanceHolder { public static final PageDirectoryManager instance = new PageDirectoryManager(); }
 
-    private final PageDirectoryPageBuffer buffer;
+    private final BufferPool<Integer, PageDirectoryPage> buffer;
     private final PageDirectory pageDirectory;
 
 
@@ -18,7 +21,8 @@ public class PageDirectoryManager {
         this.pageDirectory = new PageDirectory(Constants.PAGE_DIRECTORY_FILE_PATH, Constants.PAGE_SIZE);
 
         int bufferCapacity = Constants.PAGE_DIRECTORY_BUFFER_POOL_SIZE / Constants.PAGE_SIZE;
-        this.buffer = new PageDirectoryPageBuffer(bufferCapacity, this, this.pageDirectory::readNthPage);
+        this.buffer = this.createBufferPool(bufferCapacity);
+        this.buffer.startScheduler();
     }
 
     public static PageDirectoryManager getInstance() {
@@ -85,5 +89,34 @@ public class PageDirectoryManager {
 
     public void stopScheduler() {
         this.buffer.stopScheduler();
+    }
+
+    private BufferPool<Integer, PageDirectoryPage> createBufferPool(int capacity) {
+        return new BufferPool<>(capacity) {
+            @Override
+            protected Optional<PageDirectoryPage> readPage(Integer pageIdentifier) {
+                try {
+                    return Optional.of(PageDirectoryManager.this.pageDirectory.readNthPage(pageIdentifier));
+                }
+                catch (IOException ignored) {}
+                return Optional.empty();
+            }
+
+            @Override
+            protected void handleBufferEviction(Integer key, PageDirectoryPage value) {
+                PageDirectoryManager.this.handleBufferEviction(key, value);
+            }
+
+            @Override
+            protected void handleBufferSchedule(Set<Map.Entry<Integer, PageDirectoryPage>> entrySet) {
+                entrySet.forEach(entry -> {
+                    int pageNumber = entry.getKey();
+                    PageDirectoryPage page = entry.getValue();
+
+                    PageDirectoryManager.this.handleBufferEviction(pageNumber, page);
+                    page.markAsClean();
+                });
+            }
+        };
     }
 }
