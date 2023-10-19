@@ -12,10 +12,10 @@ import java.util.Set;
 // Must be persisted
 public class PageDirectoryManager {
     private static final class InstanceHolder { public static final PageDirectoryManager instance = new PageDirectoryManager(); }
+    public static PageDirectoryManager getInstance() { return InstanceHolder.instance; }
 
     private final BufferPool<Integer, PageDirectoryPage> buffer;
     private final PageDirectory pageDirectory;
-
 
     private PageDirectoryManager() {
         this.pageDirectory = new PageDirectory(Constants.PAGE_DIRECTORY_FILE_PATH, Constants.PAGE_SIZE);
@@ -23,10 +23,6 @@ public class PageDirectoryManager {
         int bufferCapacity = Constants.PAGE_DIRECTORY_BUFFER_POOL_SIZE / Constants.PAGE_SIZE;
         this.buffer = this.createBufferPool(bufferCapacity);
         this.buffer.startScheduler();
-    }
-
-    public static PageDirectoryManager getInstance() {
-        return InstanceHolder.instance;
     }
 
     private boolean canAddRecordToPage(PageDirectoryPage page, PageDirectoryRecord record) {
