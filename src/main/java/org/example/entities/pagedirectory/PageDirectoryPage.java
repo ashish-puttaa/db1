@@ -1,7 +1,7 @@
 package org.example.entities.pagedirectory;
 
 import org.example.Constants;
-import org.example.entities.common.DirtyablePage;
+import org.example.entities.common.Dirtyable;
 import org.example.util.ByteUtil;
 
 import java.nio.ByteBuffer;
@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class PageDirectoryPage extends DirtyablePage {
+public class PageDirectoryPage extends Dirtyable {
     private final Map<Integer, PageDirectoryRecord> pageIdMap;
 
     public PageDirectoryPage() {

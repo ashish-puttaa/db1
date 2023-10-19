@@ -1,9 +1,9 @@
 package org.example.entities.common;
 
-public class DirtyablePage {
+public class Dirtyable {
     private boolean dirty;
 
-    protected DirtyablePage() {
+    protected Dirtyable() {
         this.markAsClean();
     }
 
