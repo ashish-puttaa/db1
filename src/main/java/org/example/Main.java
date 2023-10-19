@@ -7,6 +7,7 @@ import org.example.entities.relation.Relation;
 import org.example.util.MockPageFactory;
 
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -20,18 +21,20 @@ public class Main {
     public static void main(String[] args) throws Exception {
 
         SecureRandom secureRandom = new SecureRandom();
-        int directoryFileId = secureRandom.nextInt(Integer.MAX_VALUE);
-        Files.write(Constants.RELATION_FILE_PATH, new byte[0], StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+        int directoryFileId = 12345;
+        Path relationFilePath = Relation.getFilePath(directoryFileId);
+
+        Files.write(relationFilePath, new byte[0], StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
         Files.write(Constants.PAGE_DIRECTORY_FILE_PATH, new byte[0], StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 
         for(int i=0; i<10; i++) {
             int pageId = secureRandom.nextInt(Integer.MAX_VALUE);
             int pageNumber = i + 1; // starts at 1
             Page page = MockPageFactory.generatePage(pageId, directoryFileId, pageNumber);
-            Files.write(Constants.RELATION_FILE_PATH, page.serialize(), StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.APPEND);
+            Files.write(relationFilePath, page.serialize(), StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.APPEND);
         }
 
-        Relation relation = new Relation(Constants.RELATION_FILE_PATH, Constants.PAGE_SIZE);
+        Relation relation = new Relation(relationFilePath, Constants.PAGE_SIZE);
         Iterator<Page> pageIterator = relation.getPageIterator();
 
         int pageNumber = 0;

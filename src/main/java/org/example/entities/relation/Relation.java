@@ -25,6 +25,11 @@ public class Relation {
         return new PageIterator(this.path, this.pageSize);
     }
 
+    public static Path getFilePath(int id) {
+        String fileName = "relation-" + id;
+        return Path.of(fileName);
+    }
+
     public Page readNthPage(int n) throws IOException {
         int pageOffsetInRelation = this.pageSize * n;
         byte[] pageBytes = ByteUtil.readNBytes(this.path, this.pageSize, pageOffsetInRelation);
