@@ -46,12 +46,13 @@ public abstract class BufferPool<K, V> {
     }
 
     public void stopScheduler() {
-        this.executorService.shutdown();
-
-        // TODO: Remove this later
-        while(!this.executorService.isTerminated()) {
-            // wait
+        try {
+            if(this.executorService != null) {
+                this.executorService.shutdown();
+                this.executorService.awaitTermination(5, TimeUnit.MINUTES);
+            }
         }
+        catch (InterruptedException ignored) {}
     }
 
     protected abstract Optional<V> readPage(K pageIdentifier);
