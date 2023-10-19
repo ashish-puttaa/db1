@@ -1,6 +1,7 @@
 package org.example.entities.pagedirectory;
 
 import org.example.Constants;
+import org.example.entities.relation.DirtyablePage;
 import org.example.util.ByteUtil;
 
 import java.nio.ByteBuffer;
@@ -8,13 +9,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class PageDirectoryPage {
+public class PageDirectoryPage extends DirtyablePage {
     private final Map<Integer, PageDirectoryRecord> pageIdMap;
-    private boolean dirty;
 
     public PageDirectoryPage() {
         this.pageIdMap = new HashMap<>();
-        this.dirty = false;
     }
 
     public byte[] serialize() {
@@ -59,7 +58,7 @@ public class PageDirectoryPage {
 
     public void addMapping(int pageId, PageDirectoryRecord pageDirectoryRecord) {
         this.pageIdMap.put(pageId, pageDirectoryRecord);
-        this.dirty = true;
+        this.markAsDirty();
     }
 
     public boolean hasMapping(int pageId) {
@@ -72,13 +71,5 @@ public class PageDirectoryPage {
         }
 
         return Optional.empty();
-    }
-
-    public boolean isDirty() {
-        return this.dirty;
-    }
-
-    public void markAsClean() {
-        this.dirty = false;
     }
 }
