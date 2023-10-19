@@ -1,4 +1,4 @@
-package org.example.entities.memory;
+package org.example.entities.common;
 
 import java.util.Map;
 import java.util.Optional;

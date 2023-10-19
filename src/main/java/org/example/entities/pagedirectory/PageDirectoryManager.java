@@ -1,7 +1,7 @@
 package org.example.entities.pagedirectory;
 
 import org.example.Constants;
-import org.example.entities.memory.BufferPool;
+import org.example.entities.common.BufferPool;
 
 import java.io.IOException;
 import java.util.Map;

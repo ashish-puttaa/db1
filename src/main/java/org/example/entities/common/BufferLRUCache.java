@@ -1,4 +1,4 @@
-package org.example.entities.memory;
+package org.example.entities.common;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -6,7 +6,7 @@ import java.util.Optional;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.BiConsumer;
 
-class BufferLRUCache<K, V> {
+public class BufferLRUCache<K, V> {
     public final LinkedHashMap<K, V> cache;
     private final int capacity;
     private final BiConsumer<K, V> evictionHandler;
