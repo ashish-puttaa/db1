@@ -1,7 +1,7 @@
 package org.example.entities.pagedirectory;
 
 import org.example.Constants;
-import org.example.entities.relation.DirtyablePage;
+import org.example.entities.common.DirtyablePage;
 import org.example.util.ByteUtil;
 
 import java.nio.ByteBuffer;

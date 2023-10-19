@@ -1,4 +1,4 @@
-package org.example.entities.relation;
+package org.example.entities.common;
 
 public class DirtyablePage {
     private boolean dirty;
