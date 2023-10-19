@@ -76,6 +76,7 @@ public class PageDirectoryManager {
         try {
             if(page.isDirty()) {
                 this.pageDirectory.writeNthPage(pageNumber, page);
+                page.markAsClean();
             }
         }
         catch (IOException e) {
@@ -110,7 +111,6 @@ public class PageDirectoryManager {
                     PageDirectoryPage page = entry.getValue();
 
                     PageDirectoryManager.this.handleBufferEviction(pageNumber, page);
-                    page.markAsClean();
                 });
             }
         };
