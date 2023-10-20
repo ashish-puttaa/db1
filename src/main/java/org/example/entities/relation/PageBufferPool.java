@@ -45,7 +45,7 @@ public class PageBufferPool extends BufferPool<Integer, Page> {
                 int databaseFile = record.databaseFileId();
                 int pageNumber = record.pageNumber();
 
-                Path databaseFilePath = Path.of(String.valueOf(databaseFile));
+                Path databaseFilePath = Relation.getFilePath(databaseFile);
                 Relation relation = new Relation(databaseFilePath, Constants.PAGE_SIZE);
 
                 Page page = relation.readNthPage(pageNumber);
@@ -70,7 +70,7 @@ public class PageBufferPool extends BufferPool<Integer, Page> {
                 int databaseFile = record.databaseFileId();
                 int pageNumber = record.pageNumber();
 
-                Path databaseFilePath = Path.of(String.valueOf(databaseFile));
+                Path databaseFilePath = Relation.getFilePath(databaseFile);
                 Relation relation = new Relation(databaseFilePath, Constants.PAGE_SIZE);
 
                 relation.writeNthPage(pageNumber, page);
